@@ -1,0 +1,37 @@
+{
+  "generator-jhipster": {
+    "promptValues": {
+      "packageName": "com.lagab.cmanager"
+    },
+    "jhipsterVersion": "5.8.2",
+    "applicationType": "microservice",
+    "baseName": "cm",
+    "packageName": "com.lagab.cmanager",
+    "packageFolder": "com/lagab/cmanager",
+    "serverPort": "8081",
+    "authenticationType": "jwt",
+    "cacheProvider": "ehcache",
+    "enableHibernateCache": true,
+    "websocket": false,
+    "databaseType": "sql",
+    "devDatabaseType": "mysql",
+    "prodDatabaseType": "mysql",
+    "searchEngine": false,
+    "messageBroker": false,
+    "serviceDiscoveryType": false,
+    "buildTool": "maven",
+    "enableSwaggerCodegen": false,
+    "jwtSecretKey": "ZGI5YWU3Yjg3NzRmMWY3MzM2MzgzODNmMjJjNzAwNjU1MWJlYmRhOWUyOWVlMTdhMzc0MWYyNGRmZDZkNjRlZWY4MTllNzZiNjZiNjFjYzRkYTQ2ODBjYTVhYWZjODBiMWU0Y2NmNDY4OTg3NjA0OWU4NWRkMzA5ODFlMTEyNzQ=",
+    "testFrameworks": [
+      "gatling"
+    ],
+    "jhiPrefix": "jhi",
+    "entitySuffix": "",
+    "dtoSuffix": "DTO",
+    "otherModules": [],
+    "enableTranslation": false,
+    "clientPackageManager": "npm",
+    "skipClient": true,
+    "skipUserManagement": true
+  }
+}
