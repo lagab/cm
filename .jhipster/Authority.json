@@ -15,12 +15,13 @@
         }
     ],
     "changelogDate": "20190322160218",
-    "dto": "no",
+    "dto": "mapstruct",
     "searchEngine": false,
     "service": "no",
     "entityTableName": "authority",
     "databaseType": "sql",
     "jpaMetamodelFiltering": false,
     "pagination": "no",
-    "microserviceName": "cm"
+    "microserviceName": "cm",
+    "enableEntityAudit": false
 }
