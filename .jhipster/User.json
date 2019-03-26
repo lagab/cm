@@ -112,7 +112,7 @@
     "dto": "mapstruct",
     "searchEngine": false,
     "service": "serviceImpl",
-    "entityTableName": "user",
+    "entityTableName": "jhi_user",
     "databaseType": "sql",
     "jpaMetamodelFiltering": false,
     "pagination": "no",

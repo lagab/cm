@@ -63,12 +63,12 @@ class AuthorityGatlingTest extends Simulation {
         .pause(10)
         .repeat(2) {
             exec(http("Get all authorities")
-            .get("/cm/api/authorities")
+            .get("/api/authorities")
             .headers(headers_http_authenticated)
             .check(status.is(200)))
             .pause(10 seconds, 20 seconds)
             .exec(http("Create new authority")
-            .post("/cm/api/authorities")
+            .post("/api/authorities")
             .headers(headers_http_authenticated)
             .body(StringBody("""{
                 "id":null
@@ -79,12 +79,12 @@ class AuthorityGatlingTest extends Simulation {
             .pause(10)
             .repeat(5) {
                 exec(http("Get created authority")
-                .get("/cm${new_authority_url}")
+                .get("${new_authority_url}")
                 .headers(headers_http_authenticated))
                 .pause(10)
             }
             .exec(http("Delete created authority")
-            .delete("/cm${new_authority_url}")
+            .delete("${new_authority_url}")
             .headers(headers_http_authenticated))
             .pause(10)
         }

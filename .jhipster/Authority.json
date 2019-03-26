@@ -22,6 +22,5 @@
     "databaseType": "sql",
     "jpaMetamodelFiltering": false,
     "pagination": "no",
-    "microserviceName": "cm",
     "enableEntityAudit": false
 }

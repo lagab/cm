@@ -19,7 +19,7 @@ public class UserDTO extends AbstractAuditingDTO implements Serializable {
     private String login;
 
     @NotNull
-    @Size(max = 50)
+    @Size(max = 60)
     private String password;
 
     @Size(max = 50)

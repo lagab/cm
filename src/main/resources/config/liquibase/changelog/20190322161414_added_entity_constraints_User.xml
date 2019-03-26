@@ -7,17 +7,17 @@
         Added the constraints for entity User.
     -->
     <changeSet id="20190322161414-2" author="jhipster">
-        
+
         <addForeignKeyConstraint baseColumnNames="user_id"
-                                 baseTableName="user_authorities"
-                                 constraintName="fk_user_authorities_user_id"
+                                 baseTableName="jhi_user_authorities"
+                                 constraintName="fk_jhi_user_authorities_jhi_user_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="user"/>
+                                 referencedTableName="jhi_user"/>
         <addForeignKeyConstraint baseColumnNames="authorities_id"
-                                 baseTableName="user_authorities"
-                                 constraintName="fk_user_authorities_authorities_id"
+                                 baseTableName="jhi_user_authorities"
+                                 constraintName="fk_jhi_user_authorities_authorities_id"
                                  referencedColumnNames="id"
-                                 referencedTableName="authority"/>
-        
+                                 referencedTableName="jhi_authority"/>
+
     </changeSet>
 </databaseChangeLog>

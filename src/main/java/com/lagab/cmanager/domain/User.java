@@ -1,7 +1,6 @@
 package com.lagab.cmanager.domain;
 
 
-import com.lagab.cmanager.config.Constants;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
@@ -18,7 +17,7 @@ import java.util.Objects;
  * A User.
  */
 @Entity
-@Table(name = "user")
+@Table(name = "jhi_user")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class User extends AbstractAuditingEntity implements Serializable {
 
@@ -30,7 +29,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @NotNull
     @Size(max = 50)
-    @Pattern(regexp = Constants.LOGIN_REGEX)
+    @Pattern(regexp = "^[_.@A-Za-z0-9-]*$")
     @Column(name = "login", length = 50, nullable = false, unique = true)
     private String login;
 
@@ -73,11 +72,11 @@ public class User extends AbstractAuditingEntity implements Serializable {
     private String resetKey;
 
     @Column(name = "reset_date")
-    private Instant resetDate = null;
+    private Instant resetDate;
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    @JoinTable(name = "user_authorities",
+    @JoinTable(name = "jhi_user_authorities",
                joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name = "authorities_id", referencedColumnName = "id"))
     private Set<Authority> authorities = new HashSet<>();

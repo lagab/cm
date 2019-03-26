@@ -4,7 +4,7 @@
       "packageName": "com.lagab.cmanager"
     },
     "jhipsterVersion": "5.8.2",
-    "applicationType": "microservice",
+    "applicationType": "monolith",
     "baseName": "cm",
     "packageName": "com.lagab.cmanager",
     "packageFolder": "com/lagab/cmanager",

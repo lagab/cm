@@ -40,6 +40,9 @@ public class CacheConfiguration {
             cm.createCache(com.lagab.cmanager.repository.UserRepository.USERS_BY_LOGIN_CACHE, jcacheConfiguration);
             cm.createCache(com.lagab.cmanager.repository.UserRepository.USERS_BY_EMAIL_CACHE, jcacheConfiguration);
             cm.createCache(com.lagab.cmanager.domain.EntityAuditEvent.class.getName(), jcacheConfiguration);
+            cm.createCache(com.lagab.cmanager.domain.Workspace.class.getName(), jcacheConfiguration);
+            cm.createCache(com.lagab.cmanager.domain.Workspace.class.getName() + ".authorities", jcacheConfiguration);
+            cm.createCache(com.lagab.cmanager.domain.Workspace.class.getName() + ".users", jcacheConfiguration);
             // jhipster-needle-ehcache-add-entry
         };
     }

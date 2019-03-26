@@ -23,14 +23,14 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     String USERS_BY_EMAIL_CACHE = "usersByEmail";
 
-    @Query(value = "select distinct user from User user left join fetch user.authorities",
-        countQuery = "select count(distinct user) from User user")
+    @Query(value = "select distinct jhi_user from User jhi_user left join fetch jhi_user.authorities",
+        countQuery = "select count(distinct jhi_user) from User jhi_user")
     Page<User> findAllWithEagerRelationships(Pageable pageable);
 
-    @Query(value = "select distinct user from User user left join fetch user.authorities")
+    @Query(value = "select distinct jhi_user from User jhi_user left join fetch jhi_user.authorities")
     List<User> findAllWithEagerRelationships();
 
-    @Query("select user from User user left join fetch user.authorities where user.id =:id")
+    @Query("select jhi_user from User jhi_user left join fetch jhi_user.authorities where jhi_user.id =:id")
     Optional<User> findOneWithEagerRelationships(@Param("id") Long id);
 
     Optional<User> findOneByActivationKey(String activationKey);
@@ -55,4 +55,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findOneWithAuthoritiesByEmail(String email);
 
     Page<User> findAllByLoginNot(Pageable pageable, String login);
+
 }

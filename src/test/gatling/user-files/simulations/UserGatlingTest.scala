@@ -63,12 +63,12 @@ class UserGatlingTest extends Simulation {
         .pause(10)
         .repeat(2) {
             exec(http("Get all users")
-            .get("/cm/api/users")
+            .get("/api/users")
             .headers(headers_http_authenticated)
             .check(status.is(200)))
             .pause(10 seconds, 20 seconds)
             .exec(http("Create new user")
-            .post("/cm/api/users")
+            .post("/api/users")
             .headers(headers_http_authenticated)
             .body(StringBody("""{
                 "id":null
@@ -89,12 +89,12 @@ class UserGatlingTest extends Simulation {
             .pause(10)
             .repeat(5) {
                 exec(http("Get created user")
-                .get("/cm${new_user_url}")
+                .get("${new_user_url}")
                 .headers(headers_http_authenticated))
                 .pause(10)
             }
             .exec(http("Delete created user")
-            .delete("/cm${new_user_url}")
+            .delete("${new_user_url}")
             .headers(headers_http_authenticated))
             .pause(10)
         }
