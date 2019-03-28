@@ -54,6 +54,11 @@ public class Project implements Serializable {
     @Column(name = "image_url", length = 256)
     private String imageUrl;
 
+    @Size(max = 256)
+    @Pattern(regexp = "^[a-zA-Z0-9-\\ ,]*$")
+    @Column(name = "topics", length = 256)
+    private String topics;
+
     @ManyToOne(optional = false)
     @NotNull
     @JsonIgnoreProperties("projects")
@@ -146,6 +151,19 @@ public class Project implements Serializable {
         this.imageUrl = imageUrl;
     }
 
+    public String getTopics() {
+        return topics;
+    }
+
+    public Project topics(String topics) {
+        this.topics = topics;
+        return this;
+    }
+
+    public void setTopics(String topics) {
+        this.topics = topics;
+    }
+
     public Workspace getWorkspace() {
         return workspace;
     }
@@ -190,6 +208,7 @@ public class Project implements Serializable {
             ", path='" + getPath() + "'" +
             ", description='" + getDescription() + "'" +
             ", imageUrl='" + getImageUrl() + "'" +
+            ", topics='" + getTopics() + "'" +
             "}";
     }
 }

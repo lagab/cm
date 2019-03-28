@@ -65,6 +65,9 @@ public class ProjectResourceIntTest {
     private static final String DEFAULT_IMAGE_URL = "AAAAAAAAAA";
     private static final String UPDATED_IMAGE_URL = "BBBBBBBBBB";
 
+    private static final String DEFAULT_TOPICS = "";
+    private static final String UPDATED_TOPICS = "B";
+
     @Autowired
     private ProjectRepository projectRepository;
 
@@ -121,7 +124,8 @@ public class ProjectResourceIntTest {
             .visibility(DEFAULT_VISIBILITY)
             .path(DEFAULT_PATH)
             .description(DEFAULT_DESCRIPTION)
-            .imageUrl(DEFAULT_IMAGE_URL);
+            .imageUrl(DEFAULT_IMAGE_URL)
+            .topics(DEFAULT_TOPICS);
         // Add required entity
         Workspace workspace = WorkspaceResourceIntTest.createEntity(em);
         em.persist(workspace);
@@ -157,6 +161,7 @@ public class ProjectResourceIntTest {
         assertThat(testProject.getPath()).isEqualTo(DEFAULT_PATH);
         assertThat(testProject.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
         assertThat(testProject.getImageUrl()).isEqualTo(DEFAULT_IMAGE_URL);
+        assertThat(testProject.getTopics()).isEqualTo(DEFAULT_TOPICS);
     }
 
     @Test
@@ -271,7 +276,8 @@ public class ProjectResourceIntTest {
             .andExpect(jsonPath("$.[*].visibility").value(hasItem(DEFAULT_VISIBILITY.toString())))
             .andExpect(jsonPath("$.[*].path").value(hasItem(DEFAULT_PATH.toString())))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
-            .andExpect(jsonPath("$.[*].imageUrl").value(hasItem(DEFAULT_IMAGE_URL.toString())));
+            .andExpect(jsonPath("$.[*].imageUrl").value(hasItem(DEFAULT_IMAGE_URL.toString())))
+            .andExpect(jsonPath("$.[*].topics").value(hasItem(DEFAULT_TOPICS.toString())));
     }
     
     @Test
@@ -290,7 +296,8 @@ public class ProjectResourceIntTest {
             .andExpect(jsonPath("$.visibility").value(DEFAULT_VISIBILITY.toString()))
             .andExpect(jsonPath("$.path").value(DEFAULT_PATH.toString()))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()))
-            .andExpect(jsonPath("$.imageUrl").value(DEFAULT_IMAGE_URL.toString()));
+            .andExpect(jsonPath("$.imageUrl").value(DEFAULT_IMAGE_URL.toString()))
+            .andExpect(jsonPath("$.topics").value(DEFAULT_TOPICS.toString()));
     }
 
     @Test
@@ -529,6 +536,45 @@ public class ProjectResourceIntTest {
 
     @Test
     @Transactional
+    public void getAllProjectsByTopicsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        projectRepository.saveAndFlush(project);
+
+        // Get all the projectList where topics equals to DEFAULT_TOPICS
+        defaultProjectShouldBeFound("topics.equals=" + DEFAULT_TOPICS);
+
+        // Get all the projectList where topics equals to UPDATED_TOPICS
+        defaultProjectShouldNotBeFound("topics.equals=" + UPDATED_TOPICS);
+    }
+
+    @Test
+    @Transactional
+    public void getAllProjectsByTopicsIsInShouldWork() throws Exception {
+        // Initialize the database
+        projectRepository.saveAndFlush(project);
+
+        // Get all the projectList where topics in DEFAULT_TOPICS or UPDATED_TOPICS
+        defaultProjectShouldBeFound("topics.in=" + DEFAULT_TOPICS + "," + UPDATED_TOPICS);
+
+        // Get all the projectList where topics equals to UPDATED_TOPICS
+        defaultProjectShouldNotBeFound("topics.in=" + UPDATED_TOPICS);
+    }
+
+    @Test
+    @Transactional
+    public void getAllProjectsByTopicsIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        projectRepository.saveAndFlush(project);
+
+        // Get all the projectList where topics is not null
+        defaultProjectShouldBeFound("topics.specified=true");
+
+        // Get all the projectList where topics is null
+        defaultProjectShouldNotBeFound("topics.specified=false");
+    }
+
+    @Test
+    @Transactional
     public void getAllProjectsByWorkspaceIsEqualToSomething() throws Exception {
         // Initialize the database
         Workspace workspace = WorkspaceResourceIntTest.createEntity(em);
@@ -558,7 +604,8 @@ public class ProjectResourceIntTest {
             .andExpect(jsonPath("$.[*].visibility").value(hasItem(DEFAULT_VISIBILITY.toString())))
             .andExpect(jsonPath("$.[*].path").value(hasItem(DEFAULT_PATH)))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].imageUrl").value(hasItem(DEFAULT_IMAGE_URL)));
+            .andExpect(jsonPath("$.[*].imageUrl").value(hasItem(DEFAULT_IMAGE_URL)))
+            .andExpect(jsonPath("$.[*].topics").value(hasItem(DEFAULT_TOPICS)));
 
         // Check, that the count call also returns 1
         restProjectMockMvc.perform(get("/api/projects/count?sort=id,desc&" + filter))
@@ -611,7 +658,8 @@ public class ProjectResourceIntTest {
             .visibility(UPDATED_VISIBILITY)
             .path(UPDATED_PATH)
             .description(UPDATED_DESCRIPTION)
-            .imageUrl(UPDATED_IMAGE_URL);
+            .imageUrl(UPDATED_IMAGE_URL)
+            .topics(UPDATED_TOPICS);
         ProjectDTO projectDTO = projectMapper.toDto(updatedProject);
 
         restProjectMockMvc.perform(put("/api/projects")
@@ -629,6 +677,7 @@ public class ProjectResourceIntTest {
         assertThat(testProject.getPath()).isEqualTo(UPDATED_PATH);
         assertThat(testProject.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
         assertThat(testProject.getImageUrl()).isEqualTo(UPDATED_IMAGE_URL);
+        assertThat(testProject.getTopics()).isEqualTo(UPDATED_TOPICS);
     }
 
     @Test

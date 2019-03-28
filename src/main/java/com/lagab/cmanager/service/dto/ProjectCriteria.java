@@ -42,9 +42,9 @@ public class ProjectCriteria implements Serializable {
 
     private StringFilter imageUrl;
 
-    private LongFilter workspaceId;
+    private StringFilter topics;
 
-    private StringFilter workspacePath;
+    private LongFilter workspaceId;
 
     public LongFilter getId() {
         return id;
@@ -102,6 +102,14 @@ public class ProjectCriteria implements Serializable {
         this.imageUrl = imageUrl;
     }
 
+    public StringFilter getTopics() {
+        return topics;
+    }
+
+    public void setTopics(StringFilter topics) {
+        this.topics = topics;
+    }
+
     public LongFilter getWorkspaceId() {
         return workspaceId;
     }
@@ -110,13 +118,6 @@ public class ProjectCriteria implements Serializable {
         this.workspaceId = workspaceId;
     }
 
-    public StringFilter getWorkspacePath() {
-        return workspacePath;
-    }
-
-    public void setWorkspacePath(StringFilter workspacePath) {
-        this.workspacePath = workspacePath;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -135,7 +136,7 @@ public class ProjectCriteria implements Serializable {
             Objects.equals(path, that.path) &&
             Objects.equals(description, that.description) &&
             Objects.equals(imageUrl, that.imageUrl) &&
-            Objects.equals(workspacePath, that.workspacePath) &&
+            Objects.equals(topics, that.topics) &&
             Objects.equals(workspaceId, that.workspaceId);
     }
 
@@ -149,8 +150,8 @@ public class ProjectCriteria implements Serializable {
         path,
         description,
         imageUrl,
-        workspaceId,
-        workspacePath
+        topics,
+        workspaceId
         );
     }
 
@@ -164,8 +165,8 @@ public class ProjectCriteria implements Serializable {
                 (path != null ? "path=" + path + ", " : "") +
                 (description != null ? "description=" + description + ", " : "") +
                 (imageUrl != null ? "imageUrl=" + imageUrl + ", " : "") +
+                (topics != null ? "topics=" + topics + ", " : "") +
                 (workspaceId != null ? "workspaceId=" + workspaceId + ", " : "") +
-                (workspacePath != null ? "workspacePath=" + workspacePath + ", " : "") +
             "}";
     }
 

@@ -31,10 +31,12 @@ public class ProjectDTO implements Serializable {
     @Size(max = 256)
     private String imageUrl;
 
+    @Size(max = 256)
+    @Pattern(regexp = "^[a-zA-Z0-9-\\ ,]*$")
+    private String topics;
+
 
     private Long workspaceId;
-
-    private String workspacePath;
 
     public Long getId() {
         return id;
@@ -92,20 +94,20 @@ public class ProjectDTO implements Serializable {
         this.imageUrl = imageUrl;
     }
 
+    public String getTopics() {
+        return topics;
+    }
+
+    public void setTopics(String topics) {
+        this.topics = topics;
+    }
+
     public Long getWorkspaceId() {
         return workspaceId;
     }
 
     public void setWorkspaceId(Long workspaceId) {
         this.workspaceId = workspaceId;
-    }
-
-    public String getWorkspacePath() {
-        return workspacePath;
-    }
-
-    public void setWorkspacePath(String workspacePath) {
-        this.workspacePath = workspacePath;
     }
 
     @Override
@@ -139,8 +141,8 @@ public class ProjectDTO implements Serializable {
             ", path='" + getPath() + "'" +
             ", description='" + getDescription() + "'" +
             ", imageUrl='" + getImageUrl() + "'" +
+            ", topics='" + getTopics() + "'" +
             ", workspace=" + getWorkspaceId() +
-            ", workspace=" + getWorkspacePath() +
             "}";
     }
 }

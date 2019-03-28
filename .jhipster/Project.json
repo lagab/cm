@@ -63,6 +63,16 @@
                 "maxlength"
             ],
             "fieldValidateRulesMaxlength": "256"
+        },
+        {
+            "fieldName": "topics",
+            "fieldType": "String",
+            "fieldValidateRules": [
+                "maxlength",
+                "pattern"
+            ],
+            "fieldValidateRulesMaxlength": "256",
+            "fieldValidateRulesPattern": "^[a-zA-Z0-9-\\ ,]*$"
         }
     ],
     "changelogDate": "20190326160852",

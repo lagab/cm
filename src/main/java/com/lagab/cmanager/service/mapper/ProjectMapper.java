@@ -12,7 +12,6 @@ import org.mapstruct.*;
 public interface ProjectMapper extends EntityMapper<ProjectDTO, Project> {
 
     @Mapping(source = "workspace.id", target = "workspaceId")
-    @Mapping(source = "workspace.path", target = "workspacePath")
     ProjectDTO toDto(Project project);
 
     @Mapping(source = "workspaceId", target = "workspace")

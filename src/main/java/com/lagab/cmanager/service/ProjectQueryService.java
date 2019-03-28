@@ -107,13 +107,12 @@ public class ProjectQueryService extends QueryService<Project> {
             if (criteria.getImageUrl() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getImageUrl(), Project_.imageUrl));
             }
+            if (criteria.getTopics() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getTopics(), Project_.topics));
+            }
             if (criteria.getWorkspaceId() != null) {
                 specification = specification.and(buildSpecification(criteria.getWorkspaceId(),
                     root -> root.join(Project_.workspace, JoinType.LEFT).get(Workspace_.id)));
-            }
-            if (criteria.getWorkspacePath() != null) {
-                specification = specification.and(buildSpecification(criteria.getWorkspacePath(),
-                    root -> root.join(Project_.workspace, JoinType.LEFT).get(Workspace_.path)));
             }
         }
         return specification;
