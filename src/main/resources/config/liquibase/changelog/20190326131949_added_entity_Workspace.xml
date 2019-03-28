@@ -34,6 +34,10 @@
                 <constraints nullable="true" />
             </column>
 
+            <column name="path" type="varchar(50)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="ux_workspace_path" />
+            </column>
+
             <column name="owner_id" type="bigint">
                 <constraints nullable="true" />
             </column>

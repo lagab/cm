@@ -39,6 +39,12 @@ public class Workspace implements Serializable {
     @Column(name = "visibility")
     private Visibility visibility;
 
+    @NotNull
+    @Size(max = 50)
+    @Pattern(regexp = "^[a-z0-9-]*$")
+    @Column(name = "path", length = 50, nullable = false, unique = true)
+    private String path;
+
     @ManyToOne
     @JsonIgnoreProperties("workspaces")
     private User owner;
@@ -91,6 +97,19 @@ public class Workspace implements Serializable {
         this.visibility = visibility;
     }
 
+    public String getPath() {
+        return path;
+    }
+
+    public Workspace path(String path) {
+        this.path = path;
+        return this;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     public User getOwner() {
         return owner;
     }
@@ -132,6 +151,7 @@ public class Workspace implements Serializable {
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
             ", visibility='" + getVisibility() + "'" +
+            ", path='" + getPath() + "'" +
             "}";
     }
 }

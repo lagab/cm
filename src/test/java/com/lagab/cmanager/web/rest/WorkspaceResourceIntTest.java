@@ -53,6 +53,9 @@ public class WorkspaceResourceIntTest {
     private static final Visibility DEFAULT_VISIBILITY = Visibility.PRIVATE;
     private static final Visibility UPDATED_VISIBILITY = Visibility.PROTECTED;
 
+    private static final String DEFAULT_PATH = "";
+    private static final String UPDATED_PATH = "x";
+
     @Autowired
     private WorkspaceRepository workspaceRepository;
 
@@ -103,7 +106,8 @@ public class WorkspaceResourceIntTest {
         Workspace workspace = new Workspace()
             .name(DEFAULT_NAME)
             .description(DEFAULT_DESCRIPTION)
-            .visibility(DEFAULT_VISIBILITY);
+            .visibility(DEFAULT_VISIBILITY)
+            .path(DEFAULT_PATH);
         return workspace;
     }
 
@@ -131,6 +135,7 @@ public class WorkspaceResourceIntTest {
         assertThat(testWorkspace.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testWorkspace.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
         assertThat(testWorkspace.getVisibility()).isEqualTo(DEFAULT_VISIBILITY);
+        assertThat(testWorkspace.getPath()).isEqualTo(DEFAULT_PATH);
     }
 
     @Test
@@ -174,6 +179,25 @@ public class WorkspaceResourceIntTest {
 
     @Test
     @Transactional
+    public void checkPathIsRequired() throws Exception {
+        int databaseSizeBeforeTest = workspaceRepository.findAll().size();
+        // set the field null
+        workspace.setPath(null);
+
+        // Create the Workspace, which fails.
+        WorkspaceDTO workspaceDTO = workspaceMapper.toDto(workspace);
+
+        restWorkspaceMockMvc.perform(post("/api/workspaces")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(workspaceDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Workspace> workspaceList = workspaceRepository.findAll();
+        assertThat(workspaceList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     public void getAllWorkspaces() throws Exception {
         // Initialize the database
         workspaceRepository.saveAndFlush(workspace);
@@ -185,7 +209,8 @@ public class WorkspaceResourceIntTest {
             .andExpect(jsonPath("$.[*].id").value(hasItem(workspace.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION.toString())))
-            .andExpect(jsonPath("$.[*].visibility").value(hasItem(DEFAULT_VISIBILITY.toString())));
+            .andExpect(jsonPath("$.[*].visibility").value(hasItem(DEFAULT_VISIBILITY.toString())))
+            .andExpect(jsonPath("$.[*].path").value(hasItem(DEFAULT_PATH.toString())));
     }
     
     @Test
@@ -201,7 +226,8 @@ public class WorkspaceResourceIntTest {
             .andExpect(jsonPath("$.id").value(workspace.getId().intValue()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION.toString()))
-            .andExpect(jsonPath("$.visibility").value(DEFAULT_VISIBILITY.toString()));
+            .andExpect(jsonPath("$.visibility").value(DEFAULT_VISIBILITY.toString()))
+            .andExpect(jsonPath("$.path").value(DEFAULT_PATH.toString()));
     }
 
     @Test
@@ -227,7 +253,8 @@ public class WorkspaceResourceIntTest {
         updatedWorkspace
             .name(UPDATED_NAME)
             .description(UPDATED_DESCRIPTION)
-            .visibility(UPDATED_VISIBILITY);
+            .visibility(UPDATED_VISIBILITY)
+            .path(UPDATED_PATH);
         WorkspaceDTO workspaceDTO = workspaceMapper.toDto(updatedWorkspace);
 
         restWorkspaceMockMvc.perform(put("/api/workspaces")
@@ -242,6 +269,7 @@ public class WorkspaceResourceIntTest {
         assertThat(testWorkspace.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testWorkspace.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
         assertThat(testWorkspace.getVisibility()).isEqualTo(UPDATED_VISIBILITY);
+        assertThat(testWorkspace.getPath()).isEqualTo(UPDATED_PATH);
     }
 
     @Test

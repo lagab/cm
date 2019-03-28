@@ -19,6 +19,11 @@ public class WorkspaceDTO implements Serializable {
 
     private Visibility visibility;
 
+    @NotNull
+    @Size(max = 50)
+    @Pattern(regexp = "^[a-z0-9-]*$")
+    private String path;
+
 
     private Long ownerId;
 
@@ -54,6 +59,14 @@ public class WorkspaceDTO implements Serializable {
 
     public void setVisibility(Visibility visibility) {
         this.visibility = visibility;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
     public Long getOwnerId() {
@@ -100,6 +113,7 @@ public class WorkspaceDTO implements Serializable {
             ", name='" + getName() + "'" +
             ", description='" + getDescription() + "'" +
             ", visibility='" + getVisibility() + "'" +
+            ", path='" + getPath() + "'" +
             ", owner=" + getOwnerId() +
             ", owner='" + getOwnerLogin() + "'" +
             "}";

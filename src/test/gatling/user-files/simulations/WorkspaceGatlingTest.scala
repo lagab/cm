@@ -75,6 +75,7 @@ class WorkspaceGatlingTest extends Simulation {
                 , "name":"SAMPLE_TEXT"
                 , "description":"SAMPLE_TEXT"
                 , "visibility":"PRIVATE"
+                , "path":"SAMPLE_TEXT"
                 }""")).asJSON
             .check(status.is(201))
             .check(headerRegex("Location", "(.*)").saveAs("new_workspace_url"))).exitHereIfFailed
