@@ -16,4 +16,9 @@ public interface MemberRepository extends JpaRepository<Member, Long>, JpaSpecif
     @Query("select jhi_member from Member jhi_member where jhi_member.user.login = ?#{principal.username}")
     List<Member> findByUserIsCurrentUser();
 
+
+    /**
+     * TODO : Create request who gives list of username's members
+     */
+
 }
