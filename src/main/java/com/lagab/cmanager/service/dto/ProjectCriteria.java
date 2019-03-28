@@ -44,6 +44,8 @@ public class ProjectCriteria implements Serializable {
 
     private LongFilter workspaceId;
 
+    private StringFilter workspacePath;
+
     public LongFilter getId() {
         return id;
     }
@@ -108,6 +110,13 @@ public class ProjectCriteria implements Serializable {
         this.workspaceId = workspaceId;
     }
 
+    public StringFilter getWorkspacePath() {
+        return workspacePath;
+    }
+
+    public void setWorkspacePath(StringFilter workspacePath) {
+        this.workspacePath = workspacePath;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -126,6 +135,7 @@ public class ProjectCriteria implements Serializable {
             Objects.equals(path, that.path) &&
             Objects.equals(description, that.description) &&
             Objects.equals(imageUrl, that.imageUrl) &&
+            Objects.equals(workspacePath, that.workspacePath) &&
             Objects.equals(workspaceId, that.workspaceId);
     }
 
@@ -139,7 +149,8 @@ public class ProjectCriteria implements Serializable {
         path,
         description,
         imageUrl,
-        workspaceId
+        workspaceId,
+        workspacePath
         );
     }
 
@@ -154,6 +165,7 @@ public class ProjectCriteria implements Serializable {
                 (description != null ? "description=" + description + ", " : "") +
                 (imageUrl != null ? "imageUrl=" + imageUrl + ", " : "") +
                 (workspaceId != null ? "workspaceId=" + workspaceId + ", " : "") +
+                (workspacePath != null ? "workspacePath=" + workspacePath + ", " : "") +
             "}";
     }
 

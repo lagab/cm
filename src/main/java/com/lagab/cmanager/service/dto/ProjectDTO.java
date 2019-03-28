@@ -34,6 +34,8 @@ public class ProjectDTO implements Serializable {
 
     private Long workspaceId;
 
+    private String workspacePath;
+
     public Long getId() {
         return id;
     }
@@ -98,6 +100,14 @@ public class ProjectDTO implements Serializable {
         this.workspaceId = workspaceId;
     }
 
+    public String getWorkspacePath() {
+        return workspacePath;
+    }
+
+    public void setWorkspacePath(String workspacePath) {
+        this.workspacePath = workspacePath;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -130,6 +140,7 @@ public class ProjectDTO implements Serializable {
             ", description='" + getDescription() + "'" +
             ", imageUrl='" + getImageUrl() + "'" +
             ", workspace=" + getWorkspaceId() +
+            ", workspace=" + getWorkspacePath() +
             "}";
     }
 }

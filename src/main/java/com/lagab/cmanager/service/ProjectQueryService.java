@@ -111,6 +111,10 @@ public class ProjectQueryService extends QueryService<Project> {
                 specification = specification.and(buildSpecification(criteria.getWorkspaceId(),
                     root -> root.join(Project_.workspace, JoinType.LEFT).get(Workspace_.id)));
             }
+            if (criteria.getWorkspacePath() != null) {
+                specification = specification.and(buildSpecification(criteria.getWorkspacePath(),
+                    root -> root.join(Project_.workspace, JoinType.LEFT).get(Workspace_.path)));
+            }
         }
         return specification;
     }
