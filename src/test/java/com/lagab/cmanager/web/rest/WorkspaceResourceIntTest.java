@@ -179,6 +179,25 @@ public class WorkspaceResourceIntTest {
 
     @Test
     @Transactional
+    public void checkVisibilityIsRequired() throws Exception {
+        int databaseSizeBeforeTest = workspaceRepository.findAll().size();
+        // set the field null
+        workspace.setVisibility(null);
+
+        // Create the Workspace, which fails.
+        WorkspaceDTO workspaceDTO = workspaceMapper.toDto(workspace);
+
+        restWorkspaceMockMvc.perform(post("/api/workspaces")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(workspaceDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Workspace> workspaceList = workspaceRepository.findAll();
+        assertThat(workspaceList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     public void checkPathIsRequired() throws Exception {
         int databaseSizeBeforeTest = workspaceRepository.findAll().size();
         // set the field null

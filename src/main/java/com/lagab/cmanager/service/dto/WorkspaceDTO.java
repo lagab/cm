@@ -17,6 +17,7 @@ public class WorkspaceDTO implements Serializable {
     @Size(max = 256)
     private String description;
 
+    @NotNull
     private Visibility visibility;
 
     @NotNull

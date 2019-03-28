@@ -31,7 +31,10 @@
         {
             "fieldName": "visibility",
             "fieldType": "Visibility",
-            "fieldValues": "PRIVATE,PROTECTED,PUBLIC"
+            "fieldValues": "PRIVATE,PROTECTED,PUBLIC",
+            "fieldValidateRules": [
+                "required"
+            ]
         },
         {
             "fieldName": "path",

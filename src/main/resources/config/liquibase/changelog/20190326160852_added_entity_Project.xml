@@ -31,11 +31,11 @@
             </column>
 
             <column name="visibility" type="varchar(255)">
-                <constraints nullable="true" />
+                <constraints nullable="false" />
             </column>
 
             <column name="path" type="varchar(50)">
-                <constraints nullable="false" unique="true" uniqueConstraintName="ux_project_path" />
+                <constraints nullable="false" />
             </column>
 
             <column name="description" type="varchar(256)">

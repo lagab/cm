@@ -56,8 +56,8 @@ public class ProjectResourceIntTest {
     private static final Visibility DEFAULT_VISIBILITY = Visibility.PRIVATE;
     private static final Visibility UPDATED_VISIBILITY = Visibility.PROTECTED;
 
-    private static final String DEFAULT_PATH = "AAAAAAAAAA";
-    private static final String UPDATED_PATH = "BBBBBBBBBB";
+    private static final String DEFAULT_PATH = "d";
+    private static final String UPDATED_PATH = "v";
 
     private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
     private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
@@ -204,6 +204,25 @@ public class ProjectResourceIntTest {
         int databaseSizeBeforeTest = projectRepository.findAll().size();
         // set the field null
         project.setArchived(null);
+
+        // Create the Project, which fails.
+        ProjectDTO projectDTO = projectMapper.toDto(project);
+
+        restProjectMockMvc.perform(post("/api/projects")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(projectDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Project> projectList = projectRepository.findAll();
+        assertThat(projectList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
+    public void checkVisibilityIsRequired() throws Exception {
+        int databaseSizeBeforeTest = projectRepository.findAll().size();
+        // set the field null
+        project.setVisibility(null);
 
         // Create the Project, which fails.
         ProjectDTO projectDTO = projectMapper.toDto(project);

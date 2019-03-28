@@ -35,8 +35,9 @@ public class Workspace implements Serializable {
     @Column(name = "description", length = 256)
     private String description;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "visibility")
+    @Column(name = "visibility", nullable = false)
     private Visibility visibility;
 
     @NotNull

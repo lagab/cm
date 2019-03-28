@@ -35,13 +35,15 @@ public class Project implements Serializable {
     @Column(name = "archived", nullable = false)
     private Boolean archived;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "visibility")
+    @Column(name = "visibility", nullable = false)
     private Visibility visibility;
 
     @NotNull
     @Size(max = 50)
-    @Column(name = "path", length = 50, nullable = false, unique = true)
+    @Pattern(regexp = "^[a-z0-9-]*$")
+    @Column(name = "path", length = 50, nullable = false)
     private String path;
 
     @Size(max = 256)
@@ -54,6 +56,7 @@ public class Project implements Serializable {
 
     @ManyToOne(optional = false)
     @NotNull
+    @JsonIgnoreProperties("projects")
     private Workspace workspace;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove

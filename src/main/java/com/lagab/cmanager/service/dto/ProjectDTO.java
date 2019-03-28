@@ -17,10 +17,12 @@ public class ProjectDTO implements Serializable {
     @NotNull
     private Boolean archived;
 
+    @NotNull
     private Visibility visibility;
 
     @NotNull
     @Size(max = 50)
+    @Pattern(regexp = "^[a-z0-9-]*$")
     private String path;
 
     @Size(max = 256)

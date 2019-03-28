@@ -9,7 +9,9 @@
             "relationshipValidateRules": [
                 "required"
             ],
-            "otherEntityField": "id"
+            "otherEntityField": "id",
+            "otherEntityRelationshipNameUndefined": false,
+            "otherEntityRelationshipName": "project"
         }
     ],
     "fields": [
@@ -30,17 +32,21 @@
         {
             "fieldName": "visibility",
             "fieldType": "Visibility",
-            "fieldValues": "PRIVATE,PROTECTED,PUBLIC"
+            "fieldValues": "PRIVATE,PROTECTED,PUBLIC",
+            "fieldValidateRules": [
+                "required"
+            ]
         },
         {
             "fieldName": "path",
             "fieldType": "String",
             "fieldValidateRules": [
                 "required",
-                "unique",
-                "maxlength"
+                "maxlength",
+                "pattern"
             ],
-            "fieldValidateRulesMaxlength": "50"
+            "fieldValidateRulesMaxlength": "50",
+            "fieldValidateRulesPattern": "^[a-z0-9-]*$"
         },
         {
             "fieldName": "description",
