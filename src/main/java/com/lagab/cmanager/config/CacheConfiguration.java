@@ -43,6 +43,7 @@ public class CacheConfiguration {
             cm.createCache(com.lagab.cmanager.domain.Workspace.class.getName(), jcacheConfiguration);
             cm.createCache(com.lagab.cmanager.domain.Member.class.getName(), jcacheConfiguration);
             cm.createCache(com.lagab.cmanager.domain.Project.class.getName(), jcacheConfiguration);
+            cm.createCache(com.lagab.cmanager.domain.Dataset.class.getName(), jcacheConfiguration);
             // jhipster-needle-ehcache-add-entry
         };
     }
