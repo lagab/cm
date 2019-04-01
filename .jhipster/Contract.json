@@ -6,7 +6,9 @@
             "relationshipName": "project",
             "otherEntityName": "project",
             "relationshipType": "many-to-one",
-            "otherEntityField": "id"
+            "otherEntityField": "id",
+            "otherEntityRelationshipNameUndefined": false,
+            "otherEntityRelationshipName": "contract"
         }
     ],
     "fields": [
@@ -47,6 +49,20 @@
         {
             "fieldName": "template",
             "fieldType": "Boolean"
+        },
+        {
+            "fieldName": "instructions",
+            "fieldType": "byte[]",
+            "fieldTypeBlobContent": "text"
+        },
+        {
+            "fieldName": "fields",
+            "fieldType": "byte[]",
+            "fieldTypeBlobContent": "text"
+        },
+        {
+            "fieldName": "reminder",
+            "fieldType": "LocalDate"
         }
     ],
     "changelogDate": "20190329153614",

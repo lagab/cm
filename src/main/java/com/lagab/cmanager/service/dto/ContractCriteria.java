@@ -11,6 +11,7 @@ import io.github.jhipster.service.filter.IntegerFilter;
 import io.github.jhipster.service.filter.LongFilter;
 import io.github.jhipster.service.filter.StringFilter;
 import io.github.jhipster.service.filter.InstantFilter;
+import io.github.jhipster.service.filter.LocalDateFilter;
 
 /**
  * Criteria class for the Contract entity. This class is used in ContractResource to
@@ -42,6 +43,8 @@ public class ContractCriteria implements Serializable {
     private StatusFilter status;
 
     private BooleanFilter template;
+
+    private LocalDateFilter reminder;
 
     private LongFilter projectId;
 
@@ -101,6 +104,14 @@ public class ContractCriteria implements Serializable {
         this.template = template;
     }
 
+    public LocalDateFilter getReminder() {
+        return reminder;
+    }
+
+    public void setReminder(LocalDateFilter reminder) {
+        this.reminder = reminder;
+    }
+
     public LongFilter getProjectId() {
         return projectId;
     }
@@ -127,6 +138,7 @@ public class ContractCriteria implements Serializable {
             Objects.equals(expiresAt, that.expiresAt) &&
             Objects.equals(status, that.status) &&
             Objects.equals(template, that.template) &&
+            Objects.equals(reminder, that.reminder) &&
             Objects.equals(projectId, that.projectId);
     }
 
@@ -140,6 +152,7 @@ public class ContractCriteria implements Serializable {
         expiresAt,
         status,
         template,
+        reminder,
         projectId
         );
     }
@@ -154,6 +167,7 @@ public class ContractCriteria implements Serializable {
                 (expiresAt != null ? "expiresAt=" + expiresAt + ", " : "") +
                 (status != null ? "status=" + status + ", " : "") +
                 (template != null ? "template=" + template + ", " : "") +
+                (reminder != null ? "reminder=" + reminder + ", " : "") +
                 (projectId != null ? "projectId=" + projectId + ", " : "") +
             "}";
     }

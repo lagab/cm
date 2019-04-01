@@ -29,7 +29,9 @@ import org.springframework.util.Base64Utils;
 import org.springframework.validation.Validator;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDate;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -73,6 +75,15 @@ public class ContractResourceIntTest {
 
     private static final Boolean DEFAULT_TEMPLATE = false;
     private static final Boolean UPDATED_TEMPLATE = true;
+
+    private static final String DEFAULT_INSTRUCTIONS = "AAAAAAAAAA";
+    private static final String UPDATED_INSTRUCTIONS = "BBBBBBBBBB";
+
+    private static final String DEFAULT_FIELDS = "AAAAAAAAAA";
+    private static final String UPDATED_FIELDS = "BBBBBBBBBB";
+
+    private static final LocalDate DEFAULT_REMINDER = LocalDate.ofEpochDay(0L);
+    private static final LocalDate UPDATED_REMINDER = LocalDate.now(ZoneId.systemDefault());
 
     @Autowired
     private ContractRepository contractRepository;
@@ -132,7 +143,10 @@ public class ContractResourceIntTest {
             .configuration(DEFAULT_CONFIGURATION)
             .content(DEFAULT_CONTENT)
             .status(DEFAULT_STATUS)
-            .template(DEFAULT_TEMPLATE);
+            .template(DEFAULT_TEMPLATE)
+            .instructions(DEFAULT_INSTRUCTIONS)
+            .fields(DEFAULT_FIELDS)
+            .reminder(DEFAULT_REMINDER);
         return contract;
     }
 
@@ -165,6 +179,9 @@ public class ContractResourceIntTest {
         assertThat(testContract.getContent()).isEqualTo(DEFAULT_CONTENT);
         assertThat(testContract.getStatus()).isEqualTo(DEFAULT_STATUS);
         assertThat(testContract.isTemplate()).isEqualTo(DEFAULT_TEMPLATE);
+        assertThat(testContract.getInstructions()).isEqualTo(DEFAULT_INSTRUCTIONS);
+        assertThat(testContract.getFields()).isEqualTo(DEFAULT_FIELDS);
+        assertThat(testContract.getReminder()).isEqualTo(DEFAULT_REMINDER);
     }
 
     @Test
@@ -224,7 +241,10 @@ public class ContractResourceIntTest {
             .andExpect(jsonPath("$.[*].configuration").value(hasItem(DEFAULT_CONFIGURATION.toString())))
             .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT.toString())))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
-            .andExpect(jsonPath("$.[*].template").value(hasItem(DEFAULT_TEMPLATE.booleanValue())));
+            .andExpect(jsonPath("$.[*].template").value(hasItem(DEFAULT_TEMPLATE.booleanValue())))
+            .andExpect(jsonPath("$.[*].instructions").value(hasItem(DEFAULT_INSTRUCTIONS.toString())))
+            .andExpect(jsonPath("$.[*].fields").value(hasItem(DEFAULT_FIELDS.toString())))
+            .andExpect(jsonPath("$.[*].reminder").value(hasItem(DEFAULT_REMINDER.toString())));
     }
     
     @Test
@@ -245,7 +265,10 @@ public class ContractResourceIntTest {
             .andExpect(jsonPath("$.configuration").value(DEFAULT_CONFIGURATION.toString()))
             .andExpect(jsonPath("$.content").value(DEFAULT_CONTENT.toString()))
             .andExpect(jsonPath("$.status").value(DEFAULT_STATUS.toString()))
-            .andExpect(jsonPath("$.template").value(DEFAULT_TEMPLATE.booleanValue()));
+            .andExpect(jsonPath("$.template").value(DEFAULT_TEMPLATE.booleanValue()))
+            .andExpect(jsonPath("$.instructions").value(DEFAULT_INSTRUCTIONS.toString()))
+            .andExpect(jsonPath("$.fields").value(DEFAULT_FIELDS.toString()))
+            .andExpect(jsonPath("$.reminder").value(DEFAULT_REMINDER.toString()));
     }
 
     @Test
@@ -484,6 +507,72 @@ public class ContractResourceIntTest {
 
     @Test
     @Transactional
+    public void getAllContractsByReminderIsEqualToSomething() throws Exception {
+        // Initialize the database
+        contractRepository.saveAndFlush(contract);
+
+        // Get all the contractList where reminder equals to DEFAULT_REMINDER
+        defaultContractShouldBeFound("reminder.equals=" + DEFAULT_REMINDER);
+
+        // Get all the contractList where reminder equals to UPDATED_REMINDER
+        defaultContractShouldNotBeFound("reminder.equals=" + UPDATED_REMINDER);
+    }
+
+    @Test
+    @Transactional
+    public void getAllContractsByReminderIsInShouldWork() throws Exception {
+        // Initialize the database
+        contractRepository.saveAndFlush(contract);
+
+        // Get all the contractList where reminder in DEFAULT_REMINDER or UPDATED_REMINDER
+        defaultContractShouldBeFound("reminder.in=" + DEFAULT_REMINDER + "," + UPDATED_REMINDER);
+
+        // Get all the contractList where reminder equals to UPDATED_REMINDER
+        defaultContractShouldNotBeFound("reminder.in=" + UPDATED_REMINDER);
+    }
+
+    @Test
+    @Transactional
+    public void getAllContractsByReminderIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        contractRepository.saveAndFlush(contract);
+
+        // Get all the contractList where reminder is not null
+        defaultContractShouldBeFound("reminder.specified=true");
+
+        // Get all the contractList where reminder is null
+        defaultContractShouldNotBeFound("reminder.specified=false");
+    }
+
+    @Test
+    @Transactional
+    public void getAllContractsByReminderIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        contractRepository.saveAndFlush(contract);
+
+        // Get all the contractList where reminder greater than or equals to DEFAULT_REMINDER
+        defaultContractShouldBeFound("reminder.greaterOrEqualThan=" + DEFAULT_REMINDER);
+
+        // Get all the contractList where reminder greater than or equals to UPDATED_REMINDER
+        defaultContractShouldNotBeFound("reminder.greaterOrEqualThan=" + UPDATED_REMINDER);
+    }
+
+    @Test
+    @Transactional
+    public void getAllContractsByReminderIsLessThanSomething() throws Exception {
+        // Initialize the database
+        contractRepository.saveAndFlush(contract);
+
+        // Get all the contractList where reminder less than or equals to DEFAULT_REMINDER
+        defaultContractShouldNotBeFound("reminder.lessThan=" + DEFAULT_REMINDER);
+
+        // Get all the contractList where reminder less than or equals to UPDATED_REMINDER
+        defaultContractShouldBeFound("reminder.lessThan=" + UPDATED_REMINDER);
+    }
+
+
+    @Test
+    @Transactional
     public void getAllContractsByProjectIsEqualToSomething() throws Exception {
         // Initialize the database
         Project project = ProjectResourceIntTest.createEntity(em);
@@ -515,7 +604,10 @@ public class ContractResourceIntTest {
             .andExpect(jsonPath("$.[*].configuration").value(hasItem(DEFAULT_CONFIGURATION.toString())))
             .andExpect(jsonPath("$.[*].content").value(hasItem(DEFAULT_CONTENT.toString())))
             .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS.toString())))
-            .andExpect(jsonPath("$.[*].template").value(hasItem(DEFAULT_TEMPLATE.booleanValue())));
+            .andExpect(jsonPath("$.[*].template").value(hasItem(DEFAULT_TEMPLATE.booleanValue())))
+            .andExpect(jsonPath("$.[*].instructions").value(hasItem(DEFAULT_INSTRUCTIONS.toString())))
+            .andExpect(jsonPath("$.[*].fields").value(hasItem(DEFAULT_FIELDS.toString())))
+            .andExpect(jsonPath("$.[*].reminder").value(hasItem(DEFAULT_REMINDER.toString())));
 
         // Check, that the count call also returns 1
         restContractMockMvc.perform(get("/api/contracts/count?sort=id,desc&" + filter))
@@ -570,7 +662,10 @@ public class ContractResourceIntTest {
             .configuration(UPDATED_CONFIGURATION)
             .content(UPDATED_CONTENT)
             .status(UPDATED_STATUS)
-            .template(UPDATED_TEMPLATE);
+            .template(UPDATED_TEMPLATE)
+            .instructions(UPDATED_INSTRUCTIONS)
+            .fields(UPDATED_FIELDS)
+            .reminder(UPDATED_REMINDER);
         ContractDTO contractDTO = contractMapper.toDto(updatedContract);
 
         restContractMockMvc.perform(put("/api/contracts")
@@ -590,6 +685,9 @@ public class ContractResourceIntTest {
         assertThat(testContract.getContent()).isEqualTo(UPDATED_CONTENT);
         assertThat(testContract.getStatus()).isEqualTo(UPDATED_STATUS);
         assertThat(testContract.isTemplate()).isEqualTo(UPDATED_TEMPLATE);
+        assertThat(testContract.getInstructions()).isEqualTo(UPDATED_INSTRUCTIONS);
+        assertThat(testContract.getFields()).isEqualTo(UPDATED_FIELDS);
+        assertThat(testContract.getReminder()).isEqualTo(UPDATED_REMINDER);
     }
 
     @Test

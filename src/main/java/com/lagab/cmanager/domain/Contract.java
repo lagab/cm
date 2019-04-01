@@ -10,6 +10,7 @@ import javax.validation.constraints.*;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import com.lagab.cmanager.domain.enumeration.Status;
@@ -56,7 +57,19 @@ public class Contract extends AbstractAuditingEntity implements Serializable {
     @Column(name = "template")
     private Boolean template;
 
+    @Lob
+    @Column(name = "instructions")
+    private String instructions;
+
+    @Lob
+    @Column(name = "fields")
+    private String fields;
+
+    @Column(name = "reminder")
+    private LocalDate reminder;
+
     @ManyToOne
+    @JsonIgnoreProperties("contracts")
     private Project project;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
@@ -172,6 +185,45 @@ public class Contract extends AbstractAuditingEntity implements Serializable {
         this.template = template;
     }
 
+    public String getInstructions() {
+        return instructions;
+    }
+
+    public Contract instructions(String instructions) {
+        this.instructions = instructions;
+        return this;
+    }
+
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
+    }
+
+    public String getFields() {
+        return fields;
+    }
+
+    public Contract fields(String fields) {
+        this.fields = fields;
+        return this;
+    }
+
+    public void setFields(String fields) {
+        this.fields = fields;
+    }
+
+    public LocalDate getReminder() {
+        return reminder;
+    }
+
+    public Contract reminder(LocalDate reminder) {
+        this.reminder = reminder;
+        return this;
+    }
+
+    public void setReminder(LocalDate reminder) {
+        this.reminder = reminder;
+    }
+
     public Project getProject() {
         return project;
     }
@@ -218,6 +270,9 @@ public class Contract extends AbstractAuditingEntity implements Serializable {
             ", content='" + getContent() + "'" +
             ", status='" + getStatus() + "'" +
             ", template='" + isTemplate() + "'" +
+            ", instructions='" + getInstructions() + "'" +
+            ", fields='" + getFields() + "'" +
+            ", reminder='" + getReminder() + "'" +
             "}";
     }
 }

@@ -80,6 +80,9 @@ class ContractGatlingTest extends Simulation {
                 , "content":null
                 , "status":"DRAFT"
                 , "template":null
+                , "instructions":null
+                , "fields":null
+                , "reminder":"2020-01-01T00:00:00.000Z"
                 }""")).asJSON
             .check(status.is(201))
             .check(headerRegex("Location", "(.*)").saveAs("new_contract_url"))).exitHereIfFailed

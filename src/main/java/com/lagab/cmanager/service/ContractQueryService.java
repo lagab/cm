@@ -107,6 +107,9 @@ public class ContractQueryService extends QueryService<Contract> {
             if (criteria.getTemplate() != null) {
                 specification = specification.and(buildSpecification(criteria.getTemplate(), Contract_.template));
             }
+            if (criteria.getReminder() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getReminder(), Contract_.reminder));
+            }
             if (criteria.getProjectId() != null) {
                 specification = specification.and(buildSpecification(criteria.getProjectId(),
                     root -> root.join(Contract_.project, JoinType.LEFT).get(Project_.id)));

@@ -1,5 +1,6 @@
 package com.lagab.cmanager.service.dto;
 import java.time.Instant;
+import java.time.LocalDate;
 import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.util.Objects;
@@ -9,7 +10,7 @@ import com.lagab.cmanager.domain.enumeration.Status;
 /**
  * A DTO for the Contract entity.
  */
-public class ContractDTO implements Serializable {
+public class ContractDTO extends AbstractAuditingDTO implements Serializable {
 
     private Long id;
 
@@ -31,6 +32,14 @@ public class ContractDTO implements Serializable {
     private Status status;
 
     private Boolean template;
+
+    @Lob
+    private String instructions;
+
+    @Lob
+    private String fields;
+
+    private LocalDate reminder;
 
 
     private Long projectId;
@@ -107,6 +116,30 @@ public class ContractDTO implements Serializable {
         this.template = template;
     }
 
+    public String getInstructions() {
+        return instructions;
+    }
+
+    public void setInstructions(String instructions) {
+        this.instructions = instructions;
+    }
+
+    public String getFields() {
+        return fields;
+    }
+
+    public void setFields(String fields) {
+        this.fields = fields;
+    }
+
+    public LocalDate getReminder() {
+        return reminder;
+    }
+
+    public void setReminder(LocalDate reminder) {
+        this.reminder = reminder;
+    }
+
     public Long getProjectId() {
         return projectId;
     }
@@ -148,6 +181,9 @@ public class ContractDTO implements Serializable {
             ", content='" + getContent() + "'" +
             ", status='" + getStatus() + "'" +
             ", template='" + isTemplate() + "'" +
+            ", instructions='" + getInstructions() + "'" +
+            ", fields='" + getFields() + "'" +
+            ", reminder='" + getReminder() + "'" +
             ", project=" + getProjectId() +
             "}";
     }
