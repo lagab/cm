@@ -26,6 +26,8 @@ public class CommentDTO extends AbstractAuditingDTO implements Serializable {
 
     private Long contractId;
 
+    private Long parentId;
+
     public Long getId() {
         return id;
     }
@@ -74,6 +76,14 @@ public class CommentDTO extends AbstractAuditingDTO implements Serializable {
         this.contractId = contractId;
     }
 
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long commentId) {
+        this.parentId = commentId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -104,6 +114,7 @@ public class CommentDTO extends AbstractAuditingDTO implements Serializable {
             ", user=" + getUserId() +
             ", user='" + getUserLogin() + "'" +
             ", contract=" + getContractId() +
+            ", parent=" + getParentId() +
             "}";
     }
 }

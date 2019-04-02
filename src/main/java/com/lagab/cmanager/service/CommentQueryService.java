@@ -100,6 +100,14 @@ public class CommentQueryService extends QueryService<Comment> {
                 specification = specification.and(buildSpecification(criteria.getContractId(),
                     root -> root.join(Comment_.contract, JoinType.LEFT).get(Contract_.id)));
             }
+            if (criteria.getParentId() != null) {
+                specification = specification.and(buildSpecification(criteria.getParentId(),
+                    root -> root.join(Comment_.parent, JoinType.LEFT).get(Comment_.id)));
+            }
+            if (criteria.getChildsId() != null) {
+                specification = specification.and(buildSpecification(criteria.getChildsId(),
+                    root -> root.join(Comment_.childs, JoinType.LEFT).get(Comment_.id)));
+            }
         }
         return specification;
     }

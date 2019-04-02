@@ -20,5 +20,11 @@
                                  referencedColumnNames="id"
                                  referencedTableName="contract"/>
 
+        <addForeignKeyConstraint baseColumnNames="parent_id"
+                                 baseTableName="comment"
+                                 constraintName="fk_comment_parent_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="comment"/>
+
     </changeSet>
 </databaseChangeLog>

@@ -5,6 +5,7 @@ import com.lagab.cmanager.CmApp;
 import com.lagab.cmanager.domain.Comment;
 import com.lagab.cmanager.domain.User;
 import com.lagab.cmanager.domain.Contract;
+import com.lagab.cmanager.domain.Comment;
 import com.lagab.cmanager.repository.CommentRepository;
 import com.lagab.cmanager.service.CommentService;
 import com.lagab.cmanager.service.dto.CommentDTO;
@@ -290,6 +291,44 @@ public class CommentResourceIntTest {
 
         // Get all the commentList where contract equals to contractId + 1
         defaultCommentShouldNotBeFound("contractId.equals=" + (contractId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllCommentsByParentIsEqualToSomething() throws Exception {
+        // Initialize the database
+        Comment parent = CommentResourceIntTest.createEntity(em);
+        em.persist(parent);
+        em.flush();
+        comment.setParent(parent);
+        commentRepository.saveAndFlush(comment);
+        Long parentId = parent.getId();
+
+        // Get all the commentList where parent equals to parentId
+        defaultCommentShouldBeFound("parentId.equals=" + parentId);
+
+        // Get all the commentList where parent equals to parentId + 1
+        defaultCommentShouldNotBeFound("parentId.equals=" + (parentId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllCommentsByChildsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        Comment childs = CommentResourceIntTest.createEntity(em);
+        em.persist(childs);
+        em.flush();
+        comment.addChilds(childs);
+        commentRepository.saveAndFlush(comment);
+        Long childsId = childs.getId();
+
+        // Get all the commentList where childs equals to childsId
+        defaultCommentShouldBeFound("childsId.equals=" + childsId);
+
+        // Get all the commentList where childs equals to childsId + 1
+        defaultCommentShouldNotBeFound("childsId.equals=" + (childsId + 1));
     }
 
     /**

@@ -23,7 +23,22 @@
             ],
             "otherEntityField": "id",
             "otherEntityRelationshipName": "comment",
-            "otherEntityRelationshipNameUndefined": true
+            "otherEntityRelationshipNameUndefined": false
+        },
+        {
+            "relationshipName": "parent",
+            "otherEntityName": "comment",
+            "relationshipType": "many-to-one",
+            "otherEntityField": "id",
+            "otherEntityRelationshipName": "comment",
+            "otherEntityRelationshipNameUndefined": false
+        },
+        {
+            "relationshipName": "childs",
+            "otherEntityName": "comment",
+            "relationshipType": "one-to-many",
+            "otherEntityRelationshipName": "parent",
+            "otherEntityRelationshipNameUndefined": false
         }
     ],
     "fields": [

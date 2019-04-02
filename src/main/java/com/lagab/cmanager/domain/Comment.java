@@ -1,6 +1,7 @@
 package com.lagab.cmanager.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -10,6 +11,8 @@ import javax.validation.constraints.*;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Objects;
 
 /**
@@ -45,6 +48,13 @@ public class Comment extends AbstractAuditingEntity implements Serializable {
     @JsonIgnoreProperties("comments")
     private Contract contract;
 
+    @ManyToOne
+    @JsonIgnoreProperties("comments")
+    private Comment parent;
+
+    @OneToMany(mappedBy = "parent")
+    @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+    private Set<Comment> childs = new HashSet<>();
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
@@ -104,6 +114,44 @@ public class Comment extends AbstractAuditingEntity implements Serializable {
 
     public void setContract(Contract contract) {
         this.contract = contract;
+    }
+
+    public Comment getParent() {
+        return parent;
+    }
+
+    public Comment parent(Comment comment) {
+        this.parent = comment;
+        return this;
+    }
+
+    public void setParent(Comment comment) {
+        this.parent = comment;
+    }
+
+    public Set<Comment> getChilds() {
+        return childs;
+    }
+
+    public Comment childs(Set<Comment> comments) {
+        this.childs = comments;
+        return this;
+    }
+
+    public Comment addChilds(Comment comment) {
+        this.childs.add(comment);
+        comment.setParent(this);
+        return this;
+    }
+
+    public Comment removeChilds(Comment comment) {
+        this.childs.remove(comment);
+        comment.setParent(null);
+        return this;
+    }
+
+    public void setChilds(Set<Comment> comments) {
+        this.childs = comments;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 

@@ -31,6 +31,10 @@ public class CommentCriteria implements Serializable {
 
     private LongFilter contractId;
 
+    private LongFilter parentId;
+
+    private LongFilter childsId;
+
     public LongFilter getId() {
         return id;
     }
@@ -63,6 +67,22 @@ public class CommentCriteria implements Serializable {
         this.contractId = contractId;
     }
 
+    public LongFilter getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(LongFilter parentId) {
+        this.parentId = parentId;
+    }
+
+    public LongFilter getChildsId() {
+        return childsId;
+    }
+
+    public void setChildsId(LongFilter childsId) {
+        this.childsId = childsId;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -77,7 +97,9 @@ public class CommentCriteria implements Serializable {
             Objects.equals(id, that.id) &&
             Objects.equals(time, that.time) &&
             Objects.equals(userId, that.userId) &&
-            Objects.equals(contractId, that.contractId);
+            Objects.equals(contractId, that.contractId) &&
+            Objects.equals(parentId, that.parentId) &&
+            Objects.equals(childsId, that.childsId);
     }
 
     @Override
@@ -86,7 +108,9 @@ public class CommentCriteria implements Serializable {
         id,
         time,
         userId,
-        contractId
+        contractId,
+        parentId,
+        childsId
         );
     }
 
@@ -97,6 +121,8 @@ public class CommentCriteria implements Serializable {
                 (time != null ? "time=" + time + ", " : "") +
                 (userId != null ? "userId=" + userId + ", " : "") +
                 (contractId != null ? "contractId=" + contractId + ", " : "") +
+                (parentId != null ? "parentId=" + parentId + ", " : "") +
+                (childsId != null ? "childsId=" + childsId + ", " : "") +
             "}";
     }
 
