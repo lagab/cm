@@ -21,6 +21,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -109,10 +111,15 @@ public class UserService {
         newUser.setLastName(userDTO.getLastName());
         newUser.setEmail(userDTO.getEmail().toLowerCase());
         newUser.setImageUrl(userDTO.getImageUrl());
-        // TODO: add an identicon generated
-        //Generate identicon
-        if(newUser.getImageUrl().equals("")){
-            newUser.setImageUrl("http://identicon.org?t="+newUser.getLogin().trim()+"&s=120");
+        //avatar
+        if(newUser.getImageUrl() == null || newUser.getImageUrl().equals("") ){
+            try {
+                MessageDigest md = MessageDigest.getInstance("MD5");
+                md.update(newUser.getEmail().trim().getBytes());
+                newUser.setImageUrl("http://www.gravatar.com/avatar/"+md.digest().toString()+"?d=identicon&f=y");
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            }
         }
         newUser.setLangKey(userDTO.getLangKey());
         // new user is not active
