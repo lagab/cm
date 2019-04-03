@@ -53,7 +53,7 @@ public class WorkspaceResourceIntTest {
     private static final Visibility DEFAULT_VISIBILITY = Visibility.PRIVATE;
     private static final Visibility UPDATED_VISIBILITY = Visibility.PROTECTED;
 
-    private static final String DEFAULT_PATH = "";
+    private static final String DEFAULT_PATH = "path";
     private static final String UPDATED_PATH = "x";
 
     @Autowired
@@ -108,6 +108,20 @@ public class WorkspaceResourceIntTest {
             .description(DEFAULT_DESCRIPTION)
             .visibility(DEFAULT_VISIBILITY)
             .path(DEFAULT_PATH);
+        return workspace;
+    }
+    /**
+     * Create an  other entity a test.
+     *
+     * This is a static method, as tests for other entities might also need it,
+     * if they test an entity which requires the current entity.
+     */
+    public static Workspace createNewEntity(EntityManager em) {
+        Workspace workspace = new Workspace()
+            .name(DEFAULT_NAME)
+            .description(DEFAULT_DESCRIPTION)
+            .visibility(DEFAULT_VISIBILITY)
+            .path(UPDATED_PATH);
         return workspace;
     }
 
@@ -231,7 +245,7 @@ public class WorkspaceResourceIntTest {
             .andExpect(jsonPath("$.[*].visibility").value(hasItem(DEFAULT_VISIBILITY.toString())))
             .andExpect(jsonPath("$.[*].path").value(hasItem(DEFAULT_PATH.toString())));
     }
-    
+
     @Test
     @Transactional
     public void getWorkspace() throws Exception {

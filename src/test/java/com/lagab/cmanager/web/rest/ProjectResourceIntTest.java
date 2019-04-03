@@ -65,7 +65,7 @@ public class ProjectResourceIntTest {
     private static final String DEFAULT_IMAGE_URL = "AAAAAAAAAA";
     private static final String UPDATED_IMAGE_URL = "BBBBBBBBBB";
 
-    private static final String DEFAULT_TOPICS = "";
+    private static final String DEFAULT_TOPICS = "A";
     private static final String UPDATED_TOPICS = "B";
 
     @Autowired
@@ -127,7 +127,7 @@ public class ProjectResourceIntTest {
             .imageUrl(DEFAULT_IMAGE_URL)
             .topics(DEFAULT_TOPICS);
         // Add required entity
-        Workspace workspace = WorkspaceResourceIntTest.createEntity(em);
+        Workspace workspace = WorkspaceResourceIntTest.createNewEntity(em);
         em.persist(workspace);
         em.flush();
         project.setWorkspace(workspace);
@@ -279,7 +279,7 @@ public class ProjectResourceIntTest {
             .andExpect(jsonPath("$.[*].imageUrl").value(hasItem(DEFAULT_IMAGE_URL.toString())))
             .andExpect(jsonPath("$.[*].topics").value(hasItem(DEFAULT_TOPICS.toString())));
     }
-    
+
     @Test
     @Transactional
     public void getProject() throws Exception {
