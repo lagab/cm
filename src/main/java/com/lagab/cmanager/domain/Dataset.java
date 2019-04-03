@@ -35,6 +35,12 @@ public class Dataset implements Serializable {
     @Column(name = "jhi_key", length = 50, nullable = false)
     private String key;
 
+    @NotNull
+    @Size(min = 2, max = 50)
+    @Pattern(regexp = "^[a-zA-Z0-9_,]*$")
+    @Column(name = "headers", length = 50, nullable = false)
+    private String headers;
+
     @Lob
     @Column(name = "data")
     private String data;
@@ -76,6 +82,19 @@ public class Dataset implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getHeaders() {
+        return headers;
+    }
+
+    public Dataset headers(String headers) {
+        this.headers = headers;
+        return this;
+    }
+
+    public void setHeaders(String headers) {
+        this.headers = headers;
     }
 
     public String getData() {
@@ -131,6 +150,7 @@ public class Dataset implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", key='" + getKey() + "'" +
+            ", headers='" + getHeaders() + "'" +
             ", data='" + getData() + "'" +
             "}";
     }

@@ -14,12 +14,12 @@ import java.util.Objects;
  * A Authority.
  */
 @Entity
-@Table(name = "jhi_authority")
+@Table(name = "authority")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class Authority implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

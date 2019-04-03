@@ -7,7 +7,7 @@
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
     <property name="now" value="now()" dbms="h2"/>
-
+    
     <property name="now" value="now()" dbms="mysql"/>
     <property name="autoIncrement" value="true"/>
 
@@ -62,14 +62,14 @@
                 <constraints nullable="true" />
             </column>
 
-            <column name="reset_date" type="timestamp">
+            <column name="reset_date" type="datetime">
                 <constraints nullable="true" />
             </column>
 
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here, do not remove-->
         </createTable>
-        <!--<dropDefaultValue tableName="jhi_user" columnName="reset_date" columnDataType="datetime"/>-->
-
+        <dropDefaultValue tableName="jhi_user" columnName="reset_date" columnDataType="datetime"/>
+        
         <createTable tableName="jhi_user_authorities">
             <column name="authorities_id" type="bigint">
                 <constraints nullable="false"/>
@@ -80,9 +80,9 @@
         </createTable>
 
         <addPrimaryKey columnNames="user_id, authorities_id" tableName="jhi_user_authorities"/>
-
+        
     </changeSet>
-
+    
     <!-- Added the entity audit columns -->
     <changeSet id="20190322161414-audit-1" author="jhipster-entity-audit">
         <addColumn tableName="jhi_user">

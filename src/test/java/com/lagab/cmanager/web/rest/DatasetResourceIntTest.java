@@ -53,6 +53,9 @@ public class DatasetResourceIntTest {
     private static final String DEFAULT_KEY = "AAAAAAAAAA";
     private static final String UPDATED_KEY = "BBBBBBBBBB";
 
+    private static final String DEFAULT_HEADERS = "AAAAAAAAAA";
+    private static final String UPDATED_HEADERS = "BBBBBBBBBB";
+
     private static final String DEFAULT_DATA = "AAAAAAAAAA";
     private static final String UPDATED_DATA = "BBBBBBBBBB";
 
@@ -109,6 +112,7 @@ public class DatasetResourceIntTest {
         Dataset dataset = new Dataset()
             .name(DEFAULT_NAME)
             .key(DEFAULT_KEY)
+            .headers(DEFAULT_HEADERS)
             .data(DEFAULT_DATA);
         return dataset;
     }
@@ -136,6 +140,7 @@ public class DatasetResourceIntTest {
         Dataset testDataset = datasetList.get(datasetList.size() - 1);
         assertThat(testDataset.getName()).isEqualTo(DEFAULT_NAME);
         assertThat(testDataset.getKey()).isEqualTo(DEFAULT_KEY);
+        assertThat(testDataset.getHeaders()).isEqualTo(DEFAULT_HEADERS);
         assertThat(testDataset.getData()).isEqualTo(DEFAULT_DATA);
     }
 
@@ -199,6 +204,25 @@ public class DatasetResourceIntTest {
 
     @Test
     @Transactional
+    public void checkHeadersIsRequired() throws Exception {
+        int databaseSizeBeforeTest = datasetRepository.findAll().size();
+        // set the field null
+        dataset.setHeaders(null);
+
+        // Create the Dataset, which fails.
+        DatasetDTO datasetDTO = datasetMapper.toDto(dataset);
+
+        restDatasetMockMvc.perform(post("/api/datasets")
+            .contentType(TestUtil.APPLICATION_JSON_UTF8)
+            .content(TestUtil.convertObjectToJsonBytes(datasetDTO)))
+            .andExpect(status().isBadRequest());
+
+        List<Dataset> datasetList = datasetRepository.findAll();
+        assertThat(datasetList).hasSize(databaseSizeBeforeTest);
+    }
+
+    @Test
+    @Transactional
     public void getAllDatasets() throws Exception {
         // Initialize the database
         datasetRepository.saveAndFlush(dataset);
@@ -210,6 +234,7 @@ public class DatasetResourceIntTest {
             .andExpect(jsonPath("$.[*].id").value(hasItem(dataset.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME.toString())))
             .andExpect(jsonPath("$.[*].key").value(hasItem(DEFAULT_KEY.toString())))
+            .andExpect(jsonPath("$.[*].headers").value(hasItem(DEFAULT_HEADERS.toString())))
             .andExpect(jsonPath("$.[*].data").value(hasItem(DEFAULT_DATA.toString())));
     }
     
@@ -226,6 +251,7 @@ public class DatasetResourceIntTest {
             .andExpect(jsonPath("$.id").value(dataset.getId().intValue()))
             .andExpect(jsonPath("$.name").value(DEFAULT_NAME.toString()))
             .andExpect(jsonPath("$.key").value(DEFAULT_KEY.toString()))
+            .andExpect(jsonPath("$.headers").value(DEFAULT_HEADERS.toString()))
             .andExpect(jsonPath("$.data").value(DEFAULT_DATA.toString()));
     }
 
@@ -309,6 +335,45 @@ public class DatasetResourceIntTest {
 
     @Test
     @Transactional
+    public void getAllDatasetsByHeadersIsEqualToSomething() throws Exception {
+        // Initialize the database
+        datasetRepository.saveAndFlush(dataset);
+
+        // Get all the datasetList where headers equals to DEFAULT_HEADERS
+        defaultDatasetShouldBeFound("headers.equals=" + DEFAULT_HEADERS);
+
+        // Get all the datasetList where headers equals to UPDATED_HEADERS
+        defaultDatasetShouldNotBeFound("headers.equals=" + UPDATED_HEADERS);
+    }
+
+    @Test
+    @Transactional
+    public void getAllDatasetsByHeadersIsInShouldWork() throws Exception {
+        // Initialize the database
+        datasetRepository.saveAndFlush(dataset);
+
+        // Get all the datasetList where headers in DEFAULT_HEADERS or UPDATED_HEADERS
+        defaultDatasetShouldBeFound("headers.in=" + DEFAULT_HEADERS + "," + UPDATED_HEADERS);
+
+        // Get all the datasetList where headers equals to UPDATED_HEADERS
+        defaultDatasetShouldNotBeFound("headers.in=" + UPDATED_HEADERS);
+    }
+
+    @Test
+    @Transactional
+    public void getAllDatasetsByHeadersIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        datasetRepository.saveAndFlush(dataset);
+
+        // Get all the datasetList where headers is not null
+        defaultDatasetShouldBeFound("headers.specified=true");
+
+        // Get all the datasetList where headers is null
+        defaultDatasetShouldNotBeFound("headers.specified=false");
+    }
+
+    @Test
+    @Transactional
     public void getAllDatasetsByProjectIsEqualToSomething() throws Exception {
         // Initialize the database
         Project project = ProjectResourceIntTest.createEntity(em);
@@ -335,6 +400,7 @@ public class DatasetResourceIntTest {
             .andExpect(jsonPath("$.[*].id").value(hasItem(dataset.getId().intValue())))
             .andExpect(jsonPath("$.[*].name").value(hasItem(DEFAULT_NAME)))
             .andExpect(jsonPath("$.[*].key").value(hasItem(DEFAULT_KEY)))
+            .andExpect(jsonPath("$.[*].headers").value(hasItem(DEFAULT_HEADERS)))
             .andExpect(jsonPath("$.[*].data").value(hasItem(DEFAULT_DATA.toString())));
 
         // Check, that the count call also returns 1
@@ -385,6 +451,7 @@ public class DatasetResourceIntTest {
         updatedDataset
             .name(UPDATED_NAME)
             .key(UPDATED_KEY)
+            .headers(UPDATED_HEADERS)
             .data(UPDATED_DATA);
         DatasetDTO datasetDTO = datasetMapper.toDto(updatedDataset);
 
@@ -399,6 +466,7 @@ public class DatasetResourceIntTest {
         Dataset testDataset = datasetList.get(datasetList.size() - 1);
         assertThat(testDataset.getName()).isEqualTo(UPDATED_NAME);
         assertThat(testDataset.getKey()).isEqualTo(UPDATED_KEY);
+        assertThat(testDataset.getHeaders()).isEqualTo(UPDATED_HEADERS);
         assertThat(testDataset.getData()).isEqualTo(UPDATED_DATA);
     }
 

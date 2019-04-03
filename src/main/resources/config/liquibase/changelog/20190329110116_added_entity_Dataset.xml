@@ -30,6 +30,10 @@
                 <constraints nullable="false" />
             </column>
 
+            <column name="headers" type="varchar(50)">
+                <constraints nullable="false" />
+            </column>
+
             <column name="data" type="clob">
                 <constraints nullable="true" />
             </column>

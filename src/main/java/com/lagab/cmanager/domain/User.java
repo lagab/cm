@@ -22,7 +22,7 @@ import java.util.Objects;
 public class User extends AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -242,7 +242,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
         return this;
     }
 
-    /*public User addAuthorities(Authority authority) {
+    public User addAuthorities(Authority authority) {
         this.authorities.add(authority);
         authority.getUsers().add(this);
         return this;
@@ -252,7 +252,7 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.authorities.remove(authority);
         authority.getUsers().remove(this);
         return this;
-    }*/
+    }
 
     public void setAuthorities(Set<Authority> authorities) {
         this.authorities = authorities;

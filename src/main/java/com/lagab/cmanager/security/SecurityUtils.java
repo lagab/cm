@@ -1,10 +1,5 @@
 package com.lagab.cmanager.security;
 
-import com.lagab.cmanager.domain.User;
-import com.lagab.cmanager.domain.enumeration.SourceType;
-import com.lagab.cmanager.domain.enumeration.Visibility;
-import com.lagab.cmanager.service.MemberService;
-import com.lagab.cmanager.service.UserService;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -78,28 +73,4 @@ public final class SecurityUtils {
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(authority)))
             .orElse(false);
     }
-
-    /**
-     * If the current user Can view a Resource
-     */
-    public static boolean isCurentUserCanAcess(Visibility visibility){
-        if( isAuthenticated() ) {
-            if (isCurrentUserInRole(AuthoritiesConstants.MANAGER)
-                || isCurrentUserInRole(AuthoritiesConstants.ADMIN)
-                || visibility.equals(Visibility.PROTECTED) ) {
-                return true;
-            }
-        }
-        return visibility.equals(Visibility.PUBLIC);
-    }
-
-    public static boolean isCurentUserCanAcess(SourceType type,Integer source,Visibility visibility){
-        boolean canAcess = isCurentUserCanAcess(visibility);
-        if( !canAcess && visibility.equals(Visibility.PRIVATE) ){
-            // Retrive the user by login
-            //Check if the user are member of this Resource
-        }
-        return canAcess;
-    }
-
 }

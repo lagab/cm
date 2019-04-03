@@ -6,7 +6,6 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
-import com.lagab.cmanager.config.audit.EntityAuditEventListener;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
@@ -21,7 +20,7 @@ import javax.persistence.MappedSuperclass;
  */
 @MappedSuperclass
 @Audited
-@EntityListeners({AuditingEntityListener.class, EntityAuditEventListener.class})
+@EntityListeners(AuditingEntityListener.class)
 public abstract class AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;

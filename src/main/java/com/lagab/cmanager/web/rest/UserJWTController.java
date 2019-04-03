@@ -1,10 +1,11 @@
 package com.lagab.cmanager.web.rest;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.lagab.cmanager.security.jwt.JWTConfigurer;
+import com.lagab.cmanager.security.jwt.JWTFilter;
 import com.lagab.cmanager.security.jwt.TokenProvider;
 import com.lagab.cmanager.web.rest.vm.LoginVM;
-import io.micrometer.core.annotation.Timed;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,21 +13,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 /**
- * @author gabriel
- * @since 22/03/2019.
  * Controller to authenticate users.
  */
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api")
 public class UserJWTController {
+
     private final TokenProvider tokenProvider;
 
     private final AuthenticationManager authenticationManager;
@@ -37,7 +34,6 @@ public class UserJWTController {
     }
 
     @PostMapping("/authenticate")
-    @Timed
     public ResponseEntity<JWTToken> authorize(@Valid @RequestBody LoginVM loginVM) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -48,7 +44,7 @@ public class UserJWTController {
         boolean rememberMe = (loginVM.isRememberMe() == null) ? false : loginVM.isRememberMe();
         String jwt = tokenProvider.createToken(authentication, rememberMe);
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add(JWTConfigurer.AUTHORIZATION_HEADER, "Bearer " + jwt);
+        httpHeaders.add(JWTFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
         return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
     }
 

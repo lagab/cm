@@ -74,6 +74,7 @@ class DatasetGatlingTest extends Simulation {
                 "id":null
                 , "name":"SAMPLE_TEXT"
                 , "key":"SAMPLE_TEXT"
+                , "headers":"SAMPLE_TEXT"
                 , "data":null
                 }""")).asJSON
             .check(status.is(201))

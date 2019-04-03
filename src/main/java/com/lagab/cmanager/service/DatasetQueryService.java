@@ -95,6 +95,9 @@ public class DatasetQueryService extends QueryService<Dataset> {
             if (criteria.getKey() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getKey(), Dataset_.key));
             }
+            if (criteria.getHeaders() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getHeaders(), Dataset_.headers));
+            }
             if (criteria.getProjectId() != null) {
                 specification = specification.and(buildSpecification(criteria.getProjectId(),
                     root -> root.join(Dataset_.project, JoinType.LEFT).get(Project_.id)));

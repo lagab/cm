@@ -3,8 +3,6 @@ package com.lagab.cmanager.security;
 import org.springframework.security.core.AuthenticationException;
 
 /**
- * @author gabriel
- * @since 25/03/2019.
  * This exception is thrown in case of a not activated user trying to authenticate.
  */
 public class UserNotActivatedException extends AuthenticationException {

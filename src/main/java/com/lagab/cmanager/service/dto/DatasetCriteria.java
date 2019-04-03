@@ -28,6 +28,8 @@ public class DatasetCriteria implements Serializable {
 
     private StringFilter key;
 
+    private StringFilter headers;
+
     private LongFilter projectId;
 
     public LongFilter getId() {
@@ -54,6 +56,14 @@ public class DatasetCriteria implements Serializable {
         this.key = key;
     }
 
+    public StringFilter getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(StringFilter headers) {
+        this.headers = headers;
+    }
+
     public LongFilter getProjectId() {
         return projectId;
     }
@@ -76,6 +86,7 @@ public class DatasetCriteria implements Serializable {
             Objects.equals(id, that.id) &&
             Objects.equals(name, that.name) &&
             Objects.equals(key, that.key) &&
+            Objects.equals(headers, that.headers) &&
             Objects.equals(projectId, that.projectId);
     }
 
@@ -85,6 +96,7 @@ public class DatasetCriteria implements Serializable {
         id,
         name,
         key,
+        headers,
         projectId
         );
     }
@@ -95,6 +107,7 @@ public class DatasetCriteria implements Serializable {
                 (id != null ? "id=" + id + ", " : "") +
                 (name != null ? "name=" + name + ", " : "") +
                 (key != null ? "key=" + key + ", " : "") +
+                (headers != null ? "headers=" + headers + ", " : "") +
                 (projectId != null ? "projectId=" + projectId + ", " : "") +
             "}";
     }

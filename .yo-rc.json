@@ -32,7 +32,7 @@
     "enableTranslation": false,
     "clientPackageManager": "npm",
     "skipClient": true,
-    "skipUserManagement": true
+    "skipUserManagement": false
   },
   "generator-jhipster-entity-audit": {
     "auditFramework": "custom"

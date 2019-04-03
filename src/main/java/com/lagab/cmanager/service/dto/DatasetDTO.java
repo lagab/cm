@@ -19,6 +19,11 @@ public class DatasetDTO implements Serializable {
     @Pattern(regexp = "^[a-zA-Z0-9_]*$")
     private String key;
 
+    @NotNull
+    @Size(min = 2, max = 50)
+    @Pattern(regexp = "^[a-zA-Z0-9_,]*$")
+    private String headers;
+
     @Lob
     private String data;
 
@@ -47,6 +52,14 @@ public class DatasetDTO implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(String headers) {
+        this.headers = headers;
     }
 
     public String getData() {
@@ -92,6 +105,7 @@ public class DatasetDTO implements Serializable {
             "id=" + getId() +
             ", name='" + getName() + "'" +
             ", key='" + getKey() + "'" +
+            ", headers='" + getHeaders() + "'" +
             ", data='" + getData() + "'" +
             ", project=" + getProjectId() +
             "}";
