@@ -22,7 +22,7 @@ import com.lagab.cmanager.domain.enumeration.AcessLevel;
 @Entity
 @Table(name = "jhi_member")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class Member implements Serializable {
+public class Member extends AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     

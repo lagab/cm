@@ -9,7 +9,7 @@ import com.lagab.cmanager.domain.enumeration.AcessLevel;
 /**
  * A DTO for the Member entity.
  */
-public class MemberDTO implements Serializable {
+public class MemberDTO extends AbstractAuditingDTO implements Serializable {
 
     private Long id;
 

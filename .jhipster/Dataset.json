@@ -6,7 +6,9 @@
             "relationshipName": "project",
             "otherEntityName": "project",
             "relationshipType": "many-to-one",
-            "otherEntityField": "id"
+            "otherEntityField": "id",
+            "otherEntityRelationshipNameUndefined": true,
+            "otherEntityRelationshipName": "dataset"
         }
     ],
     "fields": [

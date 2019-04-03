@@ -21,7 +21,7 @@ import com.lagab.cmanager.domain.enumeration.Status;
 @Entity
 @Table(name = "contract")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class Contract implements Serializable {
+public class Contract extends AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     

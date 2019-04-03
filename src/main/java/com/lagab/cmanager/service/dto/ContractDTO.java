@@ -10,7 +10,7 @@ import com.lagab.cmanager.domain.enumeration.Status;
 /**
  * A DTO for the Contract entity.
  */
-public class ContractDTO implements Serializable {
+public class ContractDTO extends AbstractAuditingDTO implements Serializable {
 
     private Long id;
 
