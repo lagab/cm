@@ -8,7 +8,7 @@ import javax.persistence.Lob;
 /**
  * A DTO for the Comment entity.
  */
-public class CommentDTO extends AbstractAuditingDTO implements Serializable {
+public class CommentDTO implements Serializable {
 
     private Long id;
 

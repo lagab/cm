@@ -1,26 +1,29 @@
 package com.lagab.cmanager.service.dto;
-import java.time.Instant;
+
+import com.lagab.cmanager.config.Constants;
+
+import com.lagab.cmanager.domain.Authority;
+import com.lagab.cmanager.domain.User;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
 import javax.validation.constraints.*;
-import java.io.Serializable;
-import java.util.HashSet;
+import java.time.Instant;
 import java.util.Set;
-import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
- * A DTO for the User entity.
+ * A DTO representing a user, with his authorities.
  */
-public class UserDTO extends AbstractAuditingDTO implements Serializable {
+public class UserDTO {
 
     private Long id;
 
-    @NotNull
-    @Size(max = 50)
-    @Pattern(regexp = "^[_.@A-Za-z0-9-]*$")
+    @NotBlank
+    @Pattern(regexp = Constants.LOGIN_REGEX)
+    @Size(min = 1, max = 50)
     private String login;
-
-    @NotNull
-    @Size(max = 60)
-    private String password;
 
     @Size(max = 50)
     private String firstName;
@@ -28,29 +31,49 @@ public class UserDTO extends AbstractAuditingDTO implements Serializable {
     @Size(max = 50)
     private String lastName;
 
-    @NotNull
+    @Email
     @Size(min = 5, max = 254)
     private String email;
-
-    @NotNull
-    private Boolean activated;
-
-    @Size(min = 2, max = 6)
-    private String langKey;
 
     @Size(max = 256)
     private String imageUrl;
 
-    @Size(max = 20)
-    private String activationKey;
+    private boolean activated = false;
 
-    @Size(max = 20)
-    private String resetKey;
+    @Size(min = 2, max = 6)
+    private String langKey;
 
-    private Instant resetDate;
+    private String createdBy;
 
+    private Instant createdDate;
 
-    private Set<AuthorityDTO> authorities = new HashSet<>();
+    private String lastModifiedBy;
+
+    private Instant lastModifiedDate;
+
+    private Set<String> authorities;
+
+    public UserDTO() {
+        // Empty constructor needed for Jackson.
+    }
+
+    public UserDTO(User user) {
+        this.id = user.getId();
+        this.login = user.getLogin();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.email = user.getEmail();
+        this.activated = user.getActivated();
+        this.imageUrl = user.getImageUrl();
+        this.langKey = user.getLangKey();
+        this.createdBy = user.getCreatedBy();
+        this.createdDate = user.getCreatedDate();
+        this.lastModifiedBy = user.getLastModifiedBy();
+        this.lastModifiedDate = user.getLastModifiedDate();
+        this.authorities = user.getAuthorities().stream()
+            .map(Authority::getName)
+            .collect(Collectors.toSet());
+    }
 
     public Long getId() {
         return id;
@@ -66,14 +89,6 @@ public class UserDTO extends AbstractAuditingDTO implements Serializable {
 
     public void setLogin(String login) {
         this.login = login;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getFirstName() {
@@ -100,11 +115,19 @@ public class UserDTO extends AbstractAuditingDTO implements Serializable {
         this.email = email;
     }
 
-    public Boolean isActivated() {
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public boolean isActivated() {
         return activated;
     }
 
-    public void setActivated(Boolean activated) {
+    public void setActivated(boolean activated) {
         this.activated = activated;
     }
 
@@ -116,82 +139,61 @@ public class UserDTO extends AbstractAuditingDTO implements Serializable {
         this.langKey = langKey;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
-    public String getActivationKey() {
-        return activationKey;
+    public Instant getCreatedDate() {
+        return createdDate;
     }
 
-    public void setActivationKey(String activationKey) {
-        this.activationKey = activationKey;
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
     }
 
-    public String getResetKey() {
-        return resetKey;
+    public String getLastModifiedBy() {
+        return lastModifiedBy;
     }
 
-    public void setResetKey(String resetKey) {
-        this.resetKey = resetKey;
+    public void setLastModifiedBy(String lastModifiedBy) {
+        this.lastModifiedBy = lastModifiedBy;
     }
 
-    public Instant getResetDate() {
-        return resetDate;
+    public Instant getLastModifiedDate() {
+        return lastModifiedDate;
     }
 
-    public void setResetDate(Instant resetDate) {
-        this.resetDate = resetDate;
+    public void setLastModifiedDate(Instant lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
     }
 
-    public Set<AuthorityDTO> getAuthorities() {
+    public Set<String> getAuthorities() {
         return authorities;
     }
 
-    public void setAuthorities(Set<AuthorityDTO> authorities) {
+    public void setAuthorities(Set<String> authorities) {
         this.authorities = authorities;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        UserDTO userDTO = (UserDTO) o;
-        if (userDTO.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), userDTO.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getId());
     }
 
     @Override
     public String toString() {
         return "UserDTO{" +
-            "id=" + getId() +
-            ", login='" + getLogin() + "'" +
-            ", password='" + getPassword() + "'" +
-            ", firstName='" + getFirstName() + "'" +
-            ", lastName='" + getLastName() + "'" +
-            ", email='" + getEmail() + "'" +
-            ", activated='" + isActivated() + "'" +
-            ", langKey='" + getLangKey() + "'" +
-            ", imageUrl='" + getImageUrl() + "'" +
-            ", activationKey='" + getActivationKey() + "'" +
-            ", resetKey='" + getResetKey() + "'" +
-            ", resetDate='" + getResetDate() + "'" +
+            "login='" + login + '\'' +
+            ", firstName='" + firstName + '\'' +
+            ", lastName='" + lastName + '\'' +
+            ", email='" + email + '\'' +
+            ", imageUrl='" + imageUrl + '\'' +
+            ", activated=" + activated +
+            ", langKey='" + langKey + '\'' +
+            ", createdBy=" + createdBy +
+            ", createdDate=" + createdDate +
+            ", lastModifiedBy='" + lastModifiedBy + '\'' +
+            ", lastModifiedDate=" + lastModifiedDate +
+            ", authorities=" + authorities +
             "}";
     }
 }

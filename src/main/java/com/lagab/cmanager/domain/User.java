@@ -1,20 +1,27 @@
 package com.lagab.cmanager.domain;
 
+import com.lagab.cmanager.config.Constants;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import javax.validation.constraints.Email;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
-
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.time.Instant;
 import java.util.HashSet;
-import java.util.Set;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
+import java.time.Instant;
 
 /**
- * A User.
+ * A user.
  */
 @Entity
 @Table(name = "jhi_user")
@@ -22,20 +29,21 @@ import java.util.Objects;
 public class User extends AbstractAuditingEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotNull
-    @Size(max = 50)
-    @Pattern(regexp = "^[_.@A-Za-z0-9-]*$")
-    @Column(name = "login", length = 50, nullable = false, unique = true)
+    @Pattern(regexp = Constants.LOGIN_REGEX)
+    @Size(min = 1, max = 50)
+    @Column(length = 50, unique = true, nullable = false)
     private String login;
 
+    @JsonIgnore
     @NotNull
-    @Size(max = 60)
-    @Column(name = "jhi_password", length = 60, nullable = false)
+    @Size(min = 60, max = 60)
+    @Column(name = "password_hash", length = 60, nullable = false)
     private String password;
 
     @Size(max = 50)
@@ -46,14 +54,14 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Column(name = "last_name", length = 50)
     private String lastName;
 
-    @NotNull
+    @Email
     @Size(min = 5, max = 254)
-    @Column(name = "email", length = 254, nullable = false, unique = true)
+    @Column(length = 254, unique = true)
     private String email;
 
     @NotNull
-    @Column(name = "activated", nullable = false)
-    private Boolean activated;
+    @Column(nullable = false)
+    private boolean activated = false;
 
     @Size(min = 2, max = 6)
     @Column(name = "lang_key", length = 6)
@@ -65,23 +73,27 @@ public class User extends AbstractAuditingEntity implements Serializable {
 
     @Size(max = 20)
     @Column(name = "activation_key", length = 20)
+    @JsonIgnore
     private String activationKey;
 
     @Size(max = 20)
     @Column(name = "reset_key", length = 20)
+    @JsonIgnore
     private String resetKey;
 
     @Column(name = "reset_date")
-    private Instant resetDate;
+    private Instant resetDate = null;
 
+    @JsonIgnore
     @ManyToMany
+    @JoinTable(
+        name = "jhi_user_authority",
+        joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+        inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "name")})
     @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-    @JoinTable(name = "jhi_user_authorities",
-               joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "authorities_id", referencedColumnName = "id"))
+    @BatchSize(size = 20)
     private Set<Authority> authorities = new HashSet<>();
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public Long getId() {
         return id;
     }
@@ -94,22 +106,13 @@ public class User extends AbstractAuditingEntity implements Serializable {
         return login;
     }
 
-    public User login(String login) {
-        this.login = login;
-        return this;
-    }
-
+    // Lowercase the login before saving it in database
     public void setLogin(String login) {
-        this.login = login;
+        this.login = StringUtils.lowerCase(login, Locale.ENGLISH);
     }
 
     public String getPassword() {
         return password;
-    }
-
-    public User password(String password) {
-        this.password = password;
-        return this;
     }
 
     public void setPassword(String password) {
@@ -120,22 +123,12 @@ public class User extends AbstractAuditingEntity implements Serializable {
         return firstName;
     }
 
-    public User firstName(String firstName) {
-        this.firstName = firstName;
-        return this;
-    }
-
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
     public String getLastName() {
         return lastName;
-    }
-
-    public User lastName(String lastName) {
-        this.lastName = lastName;
-        return this;
     }
 
     public void setLastName(String lastName) {
@@ -146,61 +139,28 @@ public class User extends AbstractAuditingEntity implements Serializable {
         return email;
     }
 
-    public User email(String email) {
-        this.email = email;
-        return this;
-    }
-
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Boolean isActivated() {
-        return activated;
-    }
-
-    public User activated(Boolean activated) {
-        this.activated = activated;
-        return this;
-    }
-
-    public void setActivated(Boolean activated) {
-        this.activated = activated;
-    }
-
-    public String getLangKey() {
-        return langKey;
-    }
-
-    public User langKey(String langKey) {
-        this.langKey = langKey;
-        return this;
-    }
-
-    public void setLangKey(String langKey) {
-        this.langKey = langKey;
     }
 
     public String getImageUrl() {
         return imageUrl;
     }
 
-    public User imageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-        return this;
-    }
-
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
-    public String getActivationKey() {
-        return activationKey;
+    public boolean getActivated() {
+        return activated;
     }
 
-    public User activationKey(String activationKey) {
-        this.activationKey = activationKey;
-        return this;
+    public void setActivated(boolean activated) {
+        this.activated = activated;
+    }
+
+    public String getActivationKey() {
+        return activationKey;
     }
 
     public void setActivationKey(String activationKey) {
@@ -211,11 +171,6 @@ public class User extends AbstractAuditingEntity implements Serializable {
         return resetKey;
     }
 
-    public User resetKey(String resetKey) {
-        this.resetKey = resetKey;
-        return this;
-    }
-
     public void setResetKey(String resetKey) {
         this.resetKey = resetKey;
     }
@@ -224,40 +179,25 @@ public class User extends AbstractAuditingEntity implements Serializable {
         return resetDate;
     }
 
-    public User resetDate(Instant resetDate) {
-        this.resetDate = resetDate;
-        return this;
-    }
-
     public void setResetDate(Instant resetDate) {
         this.resetDate = resetDate;
+    }
+
+    public String getLangKey() {
+        return langKey;
+    }
+
+    public void setLangKey(String langKey) {
+        this.langKey = langKey;
     }
 
     public Set<Authority> getAuthorities() {
         return authorities;
     }
 
-    public User authorities(Set<Authority> authorities) {
-        this.authorities = authorities;
-        return this;
-    }
-
-    public User addAuthorities(Authority authority) {
-        this.authorities.add(authority);
-        authority.getUsers().add(this);
-        return this;
-    }
-
-    public User removeAuthorities(Authority authority) {
-        this.authorities.remove(authority);
-        authority.getUsers().remove(this);
-        return this;
-    }
-
     public void setAuthorities(Set<Authority> authorities) {
         this.authorities = authorities;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     @Override
     public boolean equals(Object o) {
@@ -267,11 +207,9 @@ public class User extends AbstractAuditingEntity implements Serializable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         User user = (User) o;
-        if (user.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), user.getId());
+        return !(user.getId() == null || getId() == null) && Objects.equals(getId(), user.getId());
     }
 
     @Override
@@ -282,18 +220,14 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Override
     public String toString() {
         return "User{" +
-            "id=" + getId() +
-            ", login='" + getLogin() + "'" +
-            ", password='" + getPassword() + "'" +
-            ", firstName='" + getFirstName() + "'" +
-            ", lastName='" + getLastName() + "'" +
-            ", email='" + getEmail() + "'" +
-            ", activated='" + isActivated() + "'" +
-            ", langKey='" + getLangKey() + "'" +
-            ", imageUrl='" + getImageUrl() + "'" +
-            ", activationKey='" + getActivationKey() + "'" +
-            ", resetKey='" + getResetKey() + "'" +
-            ", resetDate='" + getResetDate() + "'" +
+            "login='" + login + '\'' +
+            ", firstName='" + firstName + '\'' +
+            ", lastName='" + lastName + '\'' +
+            ", email='" + email + '\'' +
+            ", imageUrl='" + imageUrl + '\'' +
+            ", activated='" + activated + '\'' +
+            ", langKey='" + langKey + '\'' +
+            ", activationKey='" + activationKey + '\'' +
             "}";
     }
 }
