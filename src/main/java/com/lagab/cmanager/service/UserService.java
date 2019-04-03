@@ -109,6 +109,11 @@ public class UserService {
         newUser.setLastName(userDTO.getLastName());
         newUser.setEmail(userDTO.getEmail().toLowerCase());
         newUser.setImageUrl(userDTO.getImageUrl());
+        // TODO: add an identicon generated
+        //Generate identicon
+        if(newUser.getImageUrl().equals("")){
+            newUser.setImageUrl("http://identicon.org?t="+newUser.getLogin().trim()+"&s=120");
+        }
         newUser.setLangKey(userDTO.getLangKey());
         // new user is not active
         newUser.setActivated(false);
