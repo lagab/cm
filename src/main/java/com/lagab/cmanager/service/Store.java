@@ -11,6 +11,8 @@ import java.io.InputStream;
  */
 public interface Store {
 
+    public static final String VERSION_DEFAULT = "1.0";
+
     public void addDirectory(long workspaceId, long projectId, String dirName)
         throws InternalServerErrorException;
 
