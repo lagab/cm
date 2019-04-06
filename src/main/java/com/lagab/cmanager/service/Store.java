@@ -1,6 +1,7 @@
 package com.lagab.cmanager.service;
 
 import com.lagab.cmanager.web.rest.errors.InternalServerErrorException;
+import com.lagab.cmanager.web.rest.errors.SystemException;
 
 import java.io.File;
 import java.io.InputStream;
@@ -33,11 +34,11 @@ public interface Store {
 
     public void addFile(
         long workspaceId, long projectId, String fileName, byte[] bytes)
-        throws InternalServerErrorException;
+        throws SystemException;
 
     public void addFile(
         long workspaceId, long projectId, String fileName, File file)
-        throws InternalServerErrorException;
+        throws SystemException;
 
     public void addFile(
         long workspaceId, long projectId, String fileName, InputStream is)
@@ -71,7 +72,7 @@ public interface Store {
 
     public byte[] getFileAsBytes(
         long workspaceId, long projectId, String fileName)
-        throws InternalServerErrorException;
+        throws SystemException;
 
     public byte[] getFileAsBytes(
         long workspaceId, long projectId, String fileName,
@@ -114,6 +115,21 @@ public interface Store {
         long workspaceId, long projectId, long newprojectId,
         String fileName)
         throws InternalServerErrorException;
+
+    public void updateFile(
+        long companyId, long repositoryId, String fileName,
+        String versionLabel, byte[] bytes)
+        throws SystemException;
+
+    public void updateFile(
+        long companyId, long repositoryId, String fileName,
+        String versionLabel, File file)
+        throws SystemException;
+
+    public void updateFile(
+        long companyId, long repositoryId, String fileName,
+        String versionLabel, InputStream is)
+        throws SystemException;
 
     public void updateFile(
         long workspaceId, long projectId, String fileName,
