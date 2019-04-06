@@ -13,4 +13,8 @@ public class InternalServerErrorException extends AbstractThrowableProblem {
     public InternalServerErrorException(String message) {
         super(ErrorConstants.DEFAULT_TYPE, message, Status.INTERNAL_SERVER_ERROR);
     }
+
+    public InternalServerErrorException(Throwable cause) {
+        super(ErrorConstants.DEFAULT_TYPE, cause.getMessage(), Status.INTERNAL_SERVER_ERROR);
+    }
 }
