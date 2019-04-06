@@ -1,5 +1,6 @@
 package com.lagab.cmanager.web.rest.util;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,9 +16,9 @@ import java.util.Properties;
  */
 public class FileUtil {
 
-    public static String appendParentheticalSuffix(
-        String fileName, String suffix) {
+    public static final String TMP_DIR = "/tmp";
 
+    public static String appendParentheticalSuffix(String fileName, String suffix) {
         return getFile().appendParentheticalSuffix(fileName, suffix);
     }
 
@@ -25,7 +26,6 @@ public class FileUtil {
         throws IOException {
 
         FilePermissionUtil.checkCopy(_getPath(source), _getPath(destination));
-
         getFile().copyDirectory(source, destination);
     }
 
@@ -34,7 +34,6 @@ public class FileUtil {
         throws IOException {
 
         FilePermissionUtil.checkCopy(sourceDirName, destinationDirName);
-
         getFile().copyDirectory(sourceDirName, destinationDirName);
     }
 
@@ -42,7 +41,6 @@ public class FileUtil {
         throws IOException {
 
         FilePermissionUtil.checkCopy(_getPath(source), _getPath(destination));
-
         getFile().copyFile(source, destination);
     }
 
@@ -50,7 +48,6 @@ public class FileUtil {
         throws IOException {
 
         FilePermissionUtil.checkCopy(_getPath(source), _getPath(destination));
-
         getFile().copyFile(source, destination, lazy);
     }
 
@@ -58,7 +55,6 @@ public class FileUtil {
         throws IOException {
 
         FilePermissionUtil.checkCopy(source, destination);
-
         getFile().copyFile(source, destination);
     }
 
@@ -66,62 +62,51 @@ public class FileUtil {
         throws IOException {
 
         FilePermissionUtil.checkCopy(source, destination);
-
         getFile().copyFile(source, destination, lazy);
     }
 
     public static File createTempFile() {
-        FilePermissionUtil.checkWrite(SystemProperties.get(SystemProperties.TMP_DIR));
-
+        FilePermissionUtil.checkWrite(TMP_DIR);
         return getFile().createTempFile();
     }
 
     public static File createTempFile(byte[] bytes) throws IOException {
-        FilePermissionUtil.checkWrite(SystemProperties.get(SystemProperties.TMP_DIR));
-
+        FilePermissionUtil.checkWrite(TMP_DIR);
         return getFile().createTempFile(bytes);
     }
 
     public static File createTempFile(InputStream is) throws IOException {
-        FilePermissionUtil.checkWrite(SystemProperties.get(SystemProperties.TMP_DIR));
-
+        FilePermissionUtil.checkWrite(TMP_DIR);
         return getFile().createTempFile(is);
     }
 
     public static File createTempFile(String extension) {
-        FilePermissionUtil.checkWrite( SystemProperties.get(SystemProperties.TMP_DIR));
-
+        FilePermissionUtil.checkWrite( TMP_DIR);
         return getFile().createTempFile(extension);
     }
 
     public static File createTempFile(String prefix, String extension) {
-        FilePermissionUtil.checkWrite(SystemProperties.get(SystemProperties.TMP_DIR));
-
+        FilePermissionUtil.checkWrite(TMP_DIR);
         return getFile().createTempFile(prefix, extension);
     }
 
     public static String createTempFileName() {
-        FilePermissionUtil.checkWrite(SystemProperties.get(SystemProperties.TMP_DIR));
-
+        FilePermissionUtil.checkWrite(TMP_DIR);
         return getFile().createTempFileName();
     }
 
     public static String createTempFileName(String extension) {
-        FilePermissionUtil.checkWrite(
-            SystemProperties.get(SystemProperties.TMP_DIR));
-
+        FilePermissionUtil.checkWrite(TMP_DIR);
         return getFile().createTempFileName(extension);
     }
 
     public static String createTempFileName(String prefix, String extension) {
-        FilePermissionUtil.checkWrite(SystemProperties.get(SystemProperties.TMP_DIR));
-
+        FilePermissionUtil.checkWrite(TMP_DIR);
         return getFile().createTempFileName(prefix, extension);
     }
 
     public static File createTempFolder() throws IOException {
-        FilePermissionUtil.checkWrite(SystemProperties.get(SystemProperties.TMP_DIR));
-
+        FilePermissionUtil.checkWrite(TMP_DIR);
         return getFile().createTempFolder();
     }
 
@@ -215,11 +200,6 @@ public class FileUtil {
 
     public static String getExtension(String fileName) {
         return getFile().getExtension(fileName);
-    }
-
-    public static com.lagab.cmanager.web.rest.util.File getFile() {
-        PortalRuntimePermission.checkGetBeanProperty(FileUtil.class);
-        return _file;
     }
 
     public static String getMD5Checksum(java.io.File file) throws IOException {
@@ -331,19 +311,16 @@ public class FileUtil {
 
     public static Properties toProperties(String fileName) {
         FilePermissionUtil.checkRead(fileName);
-
         return getFile().toProperties(fileName);
     }
 
     public static void touch(File file) throws IOException {
         FilePermissionUtil.checkWrite(_getPath(file));
-
         getFile().touch(file);
     }
 
     public static void touch(String fileName) throws IOException {
         FilePermissionUtil.checkWrite(fileName);
-
         getFile().touch(fileName);
     }
 
@@ -398,13 +375,11 @@ public class FileUtil {
         throws IOException {
 
         FilePermissionUtil.checkWrite(_getPath(file));
-
         getFile().write(file, s, lazy, append);
     }
 
     public static void write(String fileName, byte[] bytes) throws IOException {
         FilePermissionUtil.checkWrite(fileName);
-
         getFile().write(fileName, bytes);
     }
 
@@ -412,13 +387,11 @@ public class FileUtil {
         throws IOException {
 
         FilePermissionUtil.checkWrite(fileName);
-
         getFile().write(fileName, is);
     }
 
     public static void write(String fileName, String s) throws IOException {
         FilePermissionUtil.checkWrite(fileName);
-
         getFile().write(fileName, s);
     }
 
@@ -426,7 +399,6 @@ public class FileUtil {
         throws IOException {
 
         FilePermissionUtil.checkWrite(fileName);
-
         getFile().write(fileName, s, lazy);
     }
 
@@ -435,7 +407,6 @@ public class FileUtil {
         throws IOException {
 
         FilePermissionUtil.checkWrite(fileName);
-
         getFile().write(fileName, s, lazy, append);
     }
 
@@ -443,7 +414,6 @@ public class FileUtil {
         throws IOException {
 
         FilePermissionUtil.checkWrite(pathName);
-
         getFile().write(pathName, fileName, s);
     }
 
@@ -452,7 +422,6 @@ public class FileUtil {
         throws IOException {
 
         FilePermissionUtil.checkWrite(pathName);
-
         getFile().write(pathName, fileName, s, lazy);
     }
 
@@ -465,8 +434,11 @@ public class FileUtil {
         getFile().write(pathName, fileName, s, lazy, append);
     }
 
+    public static com.lagab.cmanager.web.rest.util.File getFile() {
+        return _file;
+    }
+
     public void setFile(com.lagab.cmanager.web.rest.util.File file) {
-        PortalRuntimePermission.checkSetBeanProperty(getClass());
         _file = file;
     }
 
@@ -478,4 +450,9 @@ public class FileUtil {
     }
 
     private static com.lagab.cmanager.web.rest.util.File _file;
+
+    @Autowired
+    public FileUtil(com.lagab.cmanager.web.rest.util.File file) {
+        _file = file;
+    }
 }

@@ -2,6 +2,8 @@ package com.lagab.cmanager.web.rest.util;
 
 import com.lagab.cmanager.service.Store;
 import com.lagab.cmanager.web.rest.errors.InternalServerErrorException;
+import com.lagab.cmanager.web.rest.errors.SystemException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.File;
 import java.io.InputStream;
@@ -91,7 +93,7 @@ public class StoreUtil {
      */
     public static void addFile(
         long workspaceId, long projectId, String fileName, byte[] bytes)
-        throws InternalServerErrorException {
+        throws SystemException {
 
         getStore().addFile(workspaceId, projectId, fileName, bytes);
     }
@@ -107,7 +109,7 @@ public class StoreUtil {
      */
     public static void addFile(
         long workspaceId, long projectId, String fileName, File file)
-        throws InternalServerErrorException {
+        throws SystemException {
 
         getStore().addFile(workspaceId, projectId, fileName, file);
     }
@@ -271,7 +273,7 @@ public class StoreUtil {
      */
     public static byte[] getFileAsBytes(
         long workspaceId, long projectId, String fileName)
-        throws InternalServerErrorException {
+        throws SystemException {
 
         return getStore().getFileAsBytes(workspaceId, projectId, fileName);
     }
@@ -646,11 +648,6 @@ public class StoreUtil {
      * @return Returns the {@link Store} object
      */
     public static Store getStore() {
-        if (_store == null) {
-            _store = (Store)PortalBeanLocatorUtil.locate(Store.class.getName());
-            ReferenceRegistry.registerReference(StoreUtil.class, "_store");
-        }
-
         return _store;
     }
 
@@ -663,8 +660,13 @@ public class StoreUtil {
      */
     public void setStore(Store store) {
         _store = store;
-        ReferenceRegistry.registerReference(StoreUtil.class, "_store");
     }
 
     private static Store _store;
+
+    @Autowired
+    public StoreUtil(Store store){
+        _store = store;
+    }
+
 }
