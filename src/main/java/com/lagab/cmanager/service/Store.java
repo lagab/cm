@@ -1,7 +1,6 @@
 package com.lagab.cmanager.service;
 
-import com.lagab.cmanager.web.rest.errors.InternalServerErrorException;
-import com.lagab.cmanager.web.rest.errors.SystemException;
+import com.lagab.cmanager.web.rest.errors.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -14,8 +13,7 @@ public interface Store {
 
     public static final String VERSION_DEFAULT = "1.0";
 
-    public void addDirectory(long workspaceId, long projectId, String dirName)
-        throws InternalServerErrorException;
+    public void addDirectory(long workspaceId, long projectId, String dirName) throws SystemException;
 
     public void addFile(
         long workspaceId, long projectId, String fileName,
@@ -42,33 +40,33 @@ public interface Store {
 
     public void addFile(
         long workspaceId, long projectId, String fileName, InputStream is)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public void checkRoot(long workspaceId);
 
     public void copyFileVersion(
         long workspaceId, long projectId, String fileName,
         String fromVersionLabel, String toVersionLabel)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public void deleteDirectory(
-        long workspaceId, long projectId, String dirName);
+        long workspaceId, long projectId, String dirName) throws SystemException;
 
     public void deleteFile(long workspaceId, long projectId, String fileName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public void deleteFile(
         long workspaceId, long projectId, String fileName,
         String versionLabel)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public File getFile(long workspaceId, long projectId, String fileName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public File getFile(
         long workspaceId, long projectId, String fileName,
         String versionLabel)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public byte[] getFileAsBytes(
         long workspaceId, long projectId, String fileName)
@@ -77,27 +75,27 @@ public interface Store {
     public byte[] getFileAsBytes(
         long workspaceId, long projectId, String fileName,
         String versionLabel)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public InputStream getFileAsStream(
         long workspaceId, long projectId, String fileName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public InputStream getFileAsStream(
         long workspaceId, long projectId, String fileName,
         String versionLabel)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public String[] getFileNames(
         long workspaceId, long projectId, String dirName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public long getFileSize(long workspaceId, long projectId, String fileName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public boolean hasDirectory(
         long workspaceId, long projectId, String dirName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public boolean hasFile(long workspaceId, long projectId, String fileName)
         throws InternalServerErrorException;
@@ -107,14 +105,13 @@ public interface Store {
         String versionLabel)
         throws InternalServerErrorException;
 
-    public boolean isValidName(String name);
 
     public void move(String srcDir, String destDir);
 
     public void updateFile(
         long workspaceId, long projectId, long newprojectId,
         String fileName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public void updateFile(
         long companyId, long repositoryId, String fileName,
@@ -134,9 +131,9 @@ public interface Store {
     public void updateFile(
         long workspaceId, long projectId, String fileName,
         String newFileName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
-    public void updateFile(
+    /*public void updateFile(
         long workspaceId, long projectId, String fileName,
         String fileExtension, boolean validateFileExtension,
         String versionLabel, String sourceFileName, File file)
@@ -146,43 +143,26 @@ public interface Store {
         long workspaceId, long projectId, String fileName,
         String fileExtension, boolean validateFileExtension,
         String versionLabel, String sourceFileName, InputStream is)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException;*/
 
     public void updateFileVersion(
         long workspaceId, long projectId, String fileName,
         String fromVersionLabel, String toVersionLabel)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     public void validate(String fileName, boolean validateFileExtension)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, FileNameException, FileExtensionException;
 
     public void validate(
         String fileName, boolean validateFileExtension, byte[] bytes)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, FileSizeException, FileNameException, FileExtensionException;
 
     public void validate(
         String fileName, boolean validateFileExtension, File file)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, FileSizeException, FileNameException, FileExtensionException;
 
     public void validate(
         String fileName, boolean validateFileExtension, InputStream is)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, FileSizeException, FileNameException, FileExtensionException;
 
-    public void validate(
-        String fileName, String fileExtension, String sourceFileName,
-        boolean validateFileExtension)
-        throws InternalServerErrorException;
-
-    public void validate(
-        String fileName, String fileExtension, String sourceFileName,
-        boolean validateFileExtension, File file)
-        throws InternalServerErrorException;
-
-    public void validate(
-        String fileName, String fileExtension, String sourceFileName,
-        boolean validateFileExtension, InputStream is)
-        throws InternalServerErrorException;
-
-    public void validateDirectoryName(String directoryName)
-        throws InternalServerErrorException;
 }

@@ -1,11 +1,10 @@
 package com.lagab.cmanager.service.impl.store;
 
 import com.lagab.cmanager.service.Store;
-import com.lagab.cmanager.web.rest.errors.DuplicateFileException;
-import com.lagab.cmanager.web.rest.errors.InternalServerErrorException;
-import com.lagab.cmanager.web.rest.errors.NoSuchFileException;
+import com.lagab.cmanager.web.rest.errors.*;
 import com.lagab.cmanager.web.rest.util.FileUtil;
 import com.lagab.cmanager.web.rest.util.StringConstants;
+import com.lagab.cmanager.web.rest.util.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,7 +14,7 @@ import java.io.*;
  * @author GABRIEL
  * @since 05/04/2019.
  */
-public class BaseStore implements Store {
+public abstract class BaseStore implements Store {
     /**
      * Adds a directory.
      *
@@ -27,8 +26,7 @@ public class BaseStore implements Store {
      */
     @Override
     public abstract void addDirectory(
-        long workspaceId, long projectId, String dirName)
-        throws InternalServerErrorException;
+        long workspaceId, long projectId, String dirName) throws SystemException;
 
     /**
      * Adds a file based on a byte array.
@@ -43,7 +41,7 @@ public class BaseStore implements Store {
     @Override
     public void addFile(
         long workspaceId, long projectId, String fileName, byte[] bytes)
-        throws InternalServerErrorException {
+        throws SystemException {
 
         File file = null;
 
@@ -73,7 +71,7 @@ public class BaseStore implements Store {
     @Override
     public void addFile(
         long workspaceId, long projectId, String fileName, File file)
-        throws InternalServerErrorException {
+        throws SystemException {
 
         InputStream is = null;
 
@@ -92,7 +90,7 @@ public class BaseStore implements Store {
                 }
             }
             catch (IOException ioe) {
-                _log.error(ioe);
+                throw new SystemException("Unable to read bytes", ioe);
             }
         }
     }
@@ -110,7 +108,7 @@ public class BaseStore implements Store {
     @Override
     public abstract void addFile(
         long workspaceId, long projectId, String fileName, InputStream is)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     /**
      * Ensures workspace's root directory exists.
@@ -142,7 +140,7 @@ public class BaseStore implements Store {
     public void copyFileVersion(
         long workspaceId, long projectId, String fileName,
         String fromVersionLabel, String toVersionLabel)
-        throws InternalServerErrorException {
+        throws InternalServerErrorException, SystemException {
 
         if (fromVersionLabel.equals(toVersionLabel)) {
             throw new DuplicateFileException(
@@ -155,7 +153,8 @@ public class BaseStore implements Store {
             workspaceId, projectId, fileName, fromVersionLabel);
 
         if (is == null) {
-            is = new UnsyncByteArrayInputStream(new byte[0]);
+            //is = new UnsyncByteArrayInputStream(new byte[0]);
+            return;
         }
 
         updateFile(workspaceId, projectId, fileName, toVersionLabel, is);
@@ -173,7 +172,7 @@ public class BaseStore implements Store {
     @Override
     public abstract void deleteDirectory(
         long workspaceId, long projectId, String dirName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     /**
      * Deletes a file. If a file has multiple versions, all versions will be
@@ -188,7 +187,7 @@ public class BaseStore implements Store {
     @Override
     public abstract void deleteFile(
         long workspaceId, long projectId, String fileName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     /**
      * Deletes a file at a particular version.
@@ -203,7 +202,7 @@ public class BaseStore implements Store {
     public abstract void deleteFile(
         long workspaceId, long projectId, String fileName,
         String versionLabel)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     /**
      * Returns the file as a {@link File} object.
@@ -225,7 +224,7 @@ public class BaseStore implements Store {
      */
     @Override
     public File getFile(long workspaceId, long projectId, String fileName)
-        throws InternalServerErrorException {
+        throws InternalServerErrorException, SystemException {
 
         return getFile(workspaceId, projectId, fileName, StringConstants.BLANK);
     }
@@ -258,7 +257,7 @@ public class BaseStore implements Store {
     public File getFile(
         long workspaceId, long projectId, String fileName,
         String versionLabel)
-        throws InternalServerErrorException {
+        throws InternalServerErrorException, SystemException {
 
         throw new UnsupportedOperationException();
     }
@@ -276,7 +275,7 @@ public class BaseStore implements Store {
     @Override
     public byte[] getFileAsBytes(
         long workspaceId, long projectId, String fileName)
-        throws InternalServerErrorException {
+        throws SystemException {
 
         byte[] bytes = null;
 
@@ -286,7 +285,7 @@ public class BaseStore implements Store {
             bytes = FileUtil.getBytes(is);
         }
         catch (IOException ioe) {
-            throw new InternalServerErrorException(ioe);
+            throw new SystemException(ioe);
         }
 
         return bytes;
@@ -307,7 +306,7 @@ public class BaseStore implements Store {
     public byte[] getFileAsBytes(
         long workspaceId, long projectId, String fileName,
         String versionLabel)
-        throws InternalServerErrorException {
+        throws InternalServerErrorException, SystemException {
 
         byte[] bytes = null;
 
@@ -337,7 +336,7 @@ public class BaseStore implements Store {
     @Override
     public InputStream getFileAsStream(
         long workspaceId, long projectId, String fileName)
-        throws InternalServerErrorException {
+        throws InternalServerErrorException, SystemException {
 
         return getFileAsStream(
             workspaceId, projectId, fileName, StringConstants.BLANK);
@@ -358,7 +357,7 @@ public class BaseStore implements Store {
     public abstract InputStream getFileAsStream(
         long workspaceId, long projectId, String fileName,
         String versionLabel)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     /**
      * Returns all files of the directory.
@@ -373,7 +372,7 @@ public class BaseStore implements Store {
     @Override
     public abstract String[] getFileNames(
         long workspaceId, long projectId, String dirName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     /**
      * Returns the size of the file.
@@ -388,7 +387,7 @@ public class BaseStore implements Store {
     @Override
     public abstract long getFileSize(
         long workspaceId, long projectId, String fileName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     /**
      * Returns <code>true</code> if the directory exists.
@@ -404,7 +403,7 @@ public class BaseStore implements Store {
     @Override
     public abstract boolean hasDirectory(
         long workspaceId, long projectId, String dirName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     /**
      * Returns <code>true</code> if the file exists.
@@ -449,7 +448,9 @@ public class BaseStore implements Store {
 
      */
     @Override
-    public abstract void move(String srcDir, String destDir) throws InternalServerErrorException;
+    public void move(String srcDir, String destDir){
+
+    }
 
     /**
      * Moves a file to a new data project.
@@ -465,7 +466,7 @@ public class BaseStore implements Store {
     public abstract void updateFile(
         long workspaceId, long projectId, long newprojectId,
         String fileName)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     /**
      * Updates a file based on a byte array.
@@ -482,7 +483,7 @@ public class BaseStore implements Store {
     public void updateFile(
         long workspaceId, long projectId, String fileName,
         String versionLabel, byte[] bytes)
-        throws InternalServerErrorException {
+        throws SystemException {
 
         File file = null;
 
@@ -514,7 +515,7 @@ public class BaseStore implements Store {
     public void updateFile(
         long workspaceId, long projectId, String fileName,
         String versionLabel, File file)
-        throws InternalServerErrorException {
+        throws InternalServerErrorException, SystemException {
 
         InputStream is = null;
 
@@ -533,7 +534,7 @@ public class BaseStore implements Store {
                 }
             }
             catch (IOException ioe) {
-                _log.error(ioe);
+                _log.error(ioe.toString());
             }
         }
     }
@@ -553,7 +554,7 @@ public class BaseStore implements Store {
     public abstract void updateFile(
         long workspaceId, long projectId, String fileName,
         String versionLabel, InputStream is)
-        throws InternalServerErrorException;
+        throws InternalServerErrorException, SystemException;
 
     /**
      * Update's a file version label. Similar to {@link #copyFileVersion(long,
@@ -572,18 +573,114 @@ public class BaseStore implements Store {
     public void updateFileVersion(
         long workspaceId, long projectId, String fileName,
         String fromVersionLabel, String toVersionLabel)
-        throws InternalServerErrorException {
+        throws InternalServerErrorException, SystemException {
 
         InputStream is = getFileAsStream(
             workspaceId, projectId, fileName, fromVersionLabel);
 
         if (is == null) {
             //is = new UnsyncByteArrayInputStream(new byte[0]);
+            return;
         }
 
         updateFile(workspaceId, projectId, fileName, toVersionLabel, is);
 
         deleteFile(workspaceId, projectId, fileName, fromVersionLabel);
+    }
+
+    @Override
+    public void validate(String fileName, boolean validateFileExtension)
+        throws InternalServerErrorException, FileNameException, FileExtensionException {
+
+        Validator.validateFileName(fileName);
+
+        if (validateFileExtension) {
+            Validator.validateFileExtension(fileName);
+        }
+    }
+
+    @Override
+    public void validate(
+        String fileName, boolean validateFileExtension, byte[] bytes)
+        throws InternalServerErrorException, FileSizeException, FileNameException, FileExtensionException {
+
+        validate(fileName, validateFileExtension);
+
+        Validator.validateFileSize(fileName, bytes);
+    }
+
+    @Override
+    public void validate(
+        String fileName, boolean validateFileExtension, File file)
+        throws InternalServerErrorException, FileSizeException, FileNameException, FileExtensionException {
+
+        validate(fileName, validateFileExtension);
+
+        Validator.validateFileSize(fileName, file);
+    }
+
+    @Override
+    public void validate(
+        String fileName, boolean validateFileExtension, InputStream is)
+        throws InternalServerErrorException, FileSizeException, FileNameException, FileExtensionException {
+
+        validate(fileName, validateFileExtension);
+
+        Validator.validateFileSize(fileName, is);
+    }
+
+    protected void logFailedDeletion(
+        long companyId, long repositoryId, String fileName) {
+
+        logFailedDeletion(companyId, repositoryId, fileName, null, null);
+    }
+
+    protected void logFailedDeletion(
+        long companyId, long repositoryId, String fileName,
+        Exception exception) {
+
+        logFailedDeletion(companyId, repositoryId, fileName, null, exception);
+    }
+
+    protected void logFailedDeletion(
+        long companyId, long repositoryId, String fileName,
+        String versionLabel) {
+
+        logFailedDeletion(
+            companyId, repositoryId, fileName, versionLabel, null);
+    }
+
+    protected void logFailedDeletion(
+        long companyId, long repositoryId, String fileName, String versionLabel,
+        Exception cause) {
+
+        if ((_log.isWarnEnabled() && (cause != null)) ||
+            (_log.isDebugEnabled() && (cause == null))) {
+
+            StringBuilder sb = new StringBuilder(9);
+
+            sb.append("Unable to delete file {companyId=");
+            sb.append(companyId);
+            sb.append(", repositoryId=");
+            sb.append(repositoryId);
+            sb.append(", fileName=");
+            sb.append(fileName);
+
+            if (Validator.isNotNull(versionLabel)) {
+                sb.append(", versionLabel=");
+                sb.append(versionLabel);
+            }
+
+            sb.append("} because it does not exist");
+
+            if (_log.isWarnEnabled() && (cause != null)) {
+                _log.warn(sb.toString(), cause);
+            }
+
+            if (_log.isDebugEnabled() && (cause == null)) {
+                _log.debug(sb.toString());
+            }
+        }
     }
 
     private static Logger _log = LoggerFactory.getLogger(BaseStore.class);
