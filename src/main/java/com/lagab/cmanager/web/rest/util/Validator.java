@@ -1,5 +1,13 @@
 package com.lagab.cmanager.web.rest.util;
 
+import com.lagab.cmanager.web.rest.errors.FileExtensionException;
+import com.lagab.cmanager.web.rest.errors.FileNameException;
+import com.lagab.cmanager.web.rest.errors.FileSizeException;
+import com.lagab.cmanager.web.rest.errors.FolderNameException;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -1151,4 +1159,122 @@ public class Validator {
     private static final Pattern _variableNamePattern = Pattern.compile(
         "[_a-zA-Z]+[_a-zA-Z0-9]*");
 
+    public void validateDirectoryName(String directoryName)
+        throws FolderNameException {
+
+        if (!isValidName(directoryName)) {
+            throw new FolderNameException(
+                "Invalid folder name " + directoryName);
+        }
+    }
+
+    public static boolean isValidName(String name) {
+        if (Validator.isNull(name)) {
+            return false;
+        }
+
+        for (String blacklistChar : StringConstants.DL_CHAR_BLACKLIST) {
+            if (name.contains(blacklistChar)) {
+                return false;
+            }
+        }
+
+        for (String blacklistLastChar : StringConstants.DL_CHAR_LAST_BLACKLIST) {
+
+            if (name.endsWith(blacklistLastChar)) {
+                return false;
+            }
+        }
+
+        String nameWithoutExtension = FileUtil.stripExtension(name);
+
+        for (String blacklistName : StringConstants.DL_NAME_BLACKLIST) {
+            if (StringUtil.equalsIgnoreCase(
+                nameWithoutExtension, blacklistName)) {
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static void validateFileName(String fileName) throws FileNameException {
+        if (!isValidName(fileName)) {
+            throw new FileNameException("Invalid file name " + fileName);
+        }
+    }
+
+    public static void validateFileExtension(String fileName) throws FileExtensionException {
+        boolean validFileExtension = false;
+
+        String[] fileExtensions = getfileExtensions();
+
+        for (String fileExtension : fileExtensions) {
+            if (StringConstants.STAR.equals(fileExtension) ||
+                StringUtil.endsWith(fileName, fileExtension)) {
+
+                validFileExtension = true;
+
+                break;
+            }
+        }
+
+        if (!validFileExtension) {
+            throw new FileExtensionException(
+                "Invalid file extension for " + fileName);
+        }
+    }
+
+    public static void validateFileSize(String fileName, byte[] bytes) throws FileSizeException {
+        if (bytes == null) {
+            throw new FileSizeException("File size is zero for " + fileName);
+        }
+
+        validateFileSize(fileName, bytes.length);
+    }
+
+    public static void validateFileSize(String fileName, File file) throws FileSizeException {
+        if (file == null) {
+            throw new FileSizeException("File is null for " + fileName);
+        }
+        validateFileSize(fileName, file.length());
+    }
+
+    public static void validateFileSize(String fileName, InputStream is) throws FileSizeException {
+        try {
+            if (is == null) {
+                throw new FileSizeException(
+                    "Input stream is null for " + fileName);
+            }
+
+            validateFileSize(fileName, is.available());
+        }
+        catch (IOException ioe) {
+            throw new FileSizeException(ioe);
+        }
+    }
+
+
+    public static void validateFileSize(String fileName, long size)
+        throws FileSizeException {
+
+        long maxSize = getMaxAllowableSize();
+
+        if ((maxSize > 0) && (size > maxSize)) {
+            throw new FileSizeException(
+                    size + " exceeds the maximum permitted size of " + maxSize +
+                    " for file " + fileName);
+        }
+    }
+
+    public static long getMaxAllowableSize() {
+        return 0;
+    }
+    public static String getAllowedfileExtensions(){
+        return StringConstants.STAR;
+    }
+    public static String[] getfileExtensions(){
+        return getAllowedfileExtensions().split(StringConstants.COMMA);
+    }
 }
