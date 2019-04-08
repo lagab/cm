@@ -1,6 +1,7 @@
 package com.lagab.cmanager.service.dto;
 
 import com.lagab.cmanager.domain.enumeration.EntityType;
+import com.lagab.cmanager.web.rest.errors.FieldErrorVM;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
@@ -67,6 +68,7 @@ public class AttachmentFileDTO extends AbstractAuditingDTO implements Serializab
 
     public void buildAttachment() {
         this.attachment = new AttachmentDTO();
+        validateFile(file);
         attachment.setFilename(file.getName());
         attachment.setEntityId(entityId);
         attachment.setEntityType(entityType);
@@ -84,5 +86,9 @@ public class AttachmentFileDTO extends AbstractAuditingDTO implements Serializab
             ", attachement='" + getAttachment() + "'" +
             ", description='" + getDescription() + "'" +
             "}";
+    }
+
+    public void validateFile(MultipartFile file){
+
     }
 }
