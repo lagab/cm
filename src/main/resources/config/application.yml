@@ -137,4 +137,29 @@ jhipster:
 # https://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
-# application:
+application:
+    store:
+        impl: com.lagab.cmanager.service.store.FileSystemStore
+        root-dir: /data
+        tmp-dir: /tmp
+        s3:
+            accessKey:
+            secretKey:
+            bucketName:
+            endpointUrl: s3.amazonaws.com
+            #
+            # Set the number of days that files should be left in the temporary
+            # directory before they are deleted.
+            #
+            #tempdir-cleanup-expunge: 7
+            #
+            # Set to the number of calls to S3Store#getFile() before triggering the
+            # clean up process.
+            #
+            #tempdir-cleanup-frequency: 100
+        # Set the part size (in bytes) for S3 multipart uploads. Defaults to 20 mb.
+        maxSize: 20971520
+        # A file extension of * will permit all file extensions.
+        file-extensions: "*"
+        #file-extensions=.bmp,.css,.doc,.docx,.dot,.gif,.gz,.htm,.html,.jpg,.js,.lar,.odb,.odf,.odg,.odp,.ods,.odt,.pdf,.png,.ppt,.pptx,.rtf,.swf,.sxc,.sxi,.sxw,.tar,.tiff,.tgz,.txt,.vsd,.xls,.xlsx,.xml,.zip,.jrxml
+        char-blacklist: \\\\,//,:,*,?,\",<,>,|,../,/..
