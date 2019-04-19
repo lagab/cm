@@ -1,7 +1,6 @@
-package com.lagab.cmanager.service;
+package com.lagab.cmanager.store;
 
 import com.lagab.cmanager.web.rest.errors.SystemException;
-import com.lagab.cmanager.web.rest.errors.store.NoSuchFileException;
 
 import java.io.File;
 import java.io.InputStream;
@@ -12,7 +11,7 @@ public interface Store {
 
     public void addDirectory(String path, String dirName) throws SystemException;
 
-    public void addFile(String path,String fileName, byte[] bytes);
+    public void addFile(String path,String fileName, byte[] bytes) throws SystemException;
     public void addFile(String path,String fileName, File file) throws SystemException;
     public void addFile(String path,String fileName, InputStream is);
 
@@ -24,15 +23,17 @@ public interface Store {
 
     public void deleteDirectory(String path, String dirName);
 
+    public void deleteFile(String path, String fileName);
+
     public void deleteFile(String path, String fileName, String versionLabel);
 
     public File getFile(String path, String fileName);
 
     public File getFile(String path, String fileName,String versionLabel);
 
-    public byte[] getFileAsBytes(String path, String fileName);
+    public byte[] getFileAsBytes(String path, String fileName) throws SystemException;
 
-    public byte[] getFileAsBytes(String path, String fileName, String versionLabel);
+    public byte[] getFileAsBytes(String path, String fileName, String versionLabel) throws SystemException;
 
     public InputStream getFileAsStream(String path, String fileName);
 

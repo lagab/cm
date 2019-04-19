@@ -1,4 +1,4 @@
-package com.lagab.cmanager.web.rest.errors.store;
+package com.lagab.cmanager.store.errors;
 
 import com.lagab.cmanager.web.rest.errors.SystemException;
 

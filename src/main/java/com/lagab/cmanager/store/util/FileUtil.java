@@ -1,4 +1,4 @@
-package com.lagab.cmanager.web.rest.util;
+package com.lagab.cmanager.store.util;
 
 import org.springframework.util.FileSystemUtils;
 

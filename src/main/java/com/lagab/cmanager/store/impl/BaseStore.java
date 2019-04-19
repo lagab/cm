@@ -1,10 +1,11 @@
-package com.lagab.cmanager.service.impl;
+package com.lagab.cmanager.store.impl;
 
-import com.lagab.cmanager.service.Store;
+import com.lagab.cmanager.store.Store;
 import com.lagab.cmanager.web.rest.errors.SystemException;
-import com.lagab.cmanager.web.rest.errors.store.NoSuchFileException;
-import com.lagab.cmanager.web.rest.util.FileUtil;
+import com.lagab.cmanager.store.errors.NoSuchFileException;
+import com.lagab.cmanager.store.util.FileUtil;
 import com.lagab.cmanager.web.rest.util.StringConstants;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
 
@@ -29,7 +30,7 @@ public abstract class BaseStore implements Store{
      * @throws SystemException if the file's information was invalid
      */
     @Override
-    public void addFile(String path, String fileName, byte[] bytes) {
+    public void addFile(String path, String fileName, byte[] bytes) throws SystemException {
 
         File file = null;
 
@@ -38,7 +39,7 @@ public abstract class BaseStore implements Store{
 
             addFile(path, fileName, file);
         }
-        catch (IOException ioe) {
+        catch (SystemException ioe) {
             throw new SystemException("Unable to write temporary file", ioe);
         }
         finally {
@@ -61,7 +62,6 @@ public abstract class BaseStore implements Store{
 
         try {
             is = new FileInputStream(file);
-
             addFile(path, fileName, is);
         }
         catch (FileNotFoundException fnfe) {
@@ -98,8 +98,7 @@ public abstract class BaseStore implements Store{
      * @throws SystemException if the directory's information was invalid
      */
     @Override
-    public abstract void deleteDirectory(
-        String path, String dirName);
+    public abstract void deleteDirectory(String path, String dirName);
 
     /**
      * Deletes a file. If a file has multiple versions, all versions will be
@@ -119,8 +118,7 @@ public abstract class BaseStore implements Store{
      * This method is useful when optimizing low-level file operations like
      * copy. The client must not delete or change the returned {@link File}
      * object in any way. This method is only supported in certain stores. If
-     * not supported, this method will throw an {@link
-     * UnsupportedOperationException}.
+     * not supported, this method will throw an {@link UnsupportedOperationException}.
      * </p>
      *
      * @param  path the path of file
@@ -168,13 +166,13 @@ public abstract class BaseStore implements Store{
      * @throws SystemException if the file's information was invalid
      */
     @Override
-    public byte[] getFileAsBytes(String path, String fileName){
+    public byte[] getFileAsBytes(String path, String fileName) throws SystemException {
 
         byte[] bytes = null;
 
         try {
             InputStream is = getFileAsStream(path, fileName);
-            bytes = FileUtil.getBytes(is);
+            bytes = IOUtils.toByteArray(is);
         }
         catch (IOException ioe) {
             throw new SystemException(ioe);
@@ -193,15 +191,13 @@ public abstract class BaseStore implements Store{
      * @throws SystemException if the file's information was invalid
      */
     @Override
-    public byte[] getFileAsBytes(String path, String fileName, String versionLabel) {
+    public byte[] getFileAsBytes(String path, String fileName, String versionLabel) throws SystemException {
 
         byte[] bytes = null;
 
         try {
-            InputStream is = getFileAsStream(
-                path, fileName, versionLabel);
-
-            bytes = FileUtil.getBytes(is);
+            InputStream is = getFileAsStream(path, fileName, versionLabel);
+            bytes = IOUtils.toByteArray(is);
         }
         catch (IOException ioe) {
             throw new SystemException(ioe);
