@@ -1,8 +1,11 @@
 package com.lagab.cmanager.store.impl;
 
 import com.lagab.cmanager.web.rest.errors.SystemException;
+import com.lagab.cmanager.web.rest.util.StringConstants;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -12,9 +15,40 @@ import java.io.InputStream;
 // Todo: implement all methods
 public class FileSystemStore extends BaseStore {
 
+    protected File getFileNameDir(String path, String fileName) {
+        File fileNameDir = new File(path + StringConstants.SLASH + fileName);
+        return fileNameDir;
+    }
+
+
+    protected File getDirNameDir(String path, String dirName) {
+        return getFileNameDir(path, dirName);
+    }
+
+    protected File getDirNameDir(long workspaceId, long projectId, String dirName) {
+        File repositoryDir = getRepositoryDir(workspaceId, projectId);
+        return getFileNameDir(repositoryDir.getPath() , dirName);
+    }
+
+    protected File getRepositoryDir(long workspaceId, long repositoryId) {
+        File repositoryDir = new File(workspaceId + StringConstants.SLASH + repositoryId);
+        return repositoryDir;
+    }
+
     @Override
     public void addDirectory(String path, String dirName) throws SystemException {
 
+        File dirNameDir = getDirNameDir(path, dirName);
+
+        if (dirNameDir.exists()) {
+            return;
+        }
+        try {
+            FileUtils.forceMkdir(dirNameDir);
+        }
+        catch (IOException ioe) {
+            throw new SystemException(ioe);
+        }
     }
 
     @Override
