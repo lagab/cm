@@ -6,7 +6,7 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 import java.lang.annotation.Annotation;
 
-public class ImageFileValidator extends FileValidator /*implements ConstraintValidator<, MultipartFile>*/ {
+public class ImageFileValidator /*implements ConstraintValidator<, MultipartFile>*/ {
 
 
     /*@Override
@@ -19,9 +19,9 @@ public class ImageFileValidator extends FileValidator /*implements ConstraintVal
         return false;
     }
 
-    protected boolean isSupportedContentType(String contentType) {
+    /*protected boolean isSupportedContentType(String contentType) {
         return contentType.equals("image/png")
             || contentType.equals("image/jpg")
             || contentType.equals("image/jpeg");
-    }
+    }*/
 }

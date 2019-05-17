@@ -2,6 +2,10 @@ package com.lagab.cmanager.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Properties specific to Cm.
  * <p>
@@ -24,6 +28,7 @@ public class ApplicationProperties {
         private String tmpDir = "";
         private String fileExtensions = "";
         private String charBlacklist = "";
+        private String allowedMimeTypes = "";
 
         private int maxSize;
 
@@ -77,6 +82,21 @@ public class ApplicationProperties {
 
         public void setMaxSize(int maxSize) {
             this.maxSize = maxSize;
+        }
+
+        public String getAllowedMimeTypes() {
+            return allowedMimeTypes;
+        }
+
+        public Set<String> getAllowedMimeTypesList() {
+            return new HashSet<>(Arrays.asList(allowedMimeTypes.trim().split(",")));
+        }
+        public Set<String> getFileExtensionsList() {
+            return new HashSet<>(Arrays.asList(fileExtensions.trim().split(",")));
+        }
+
+        public void setAllowedMimeTypes(String allowedMimeTypes) {
+            this.allowedMimeTypes = allowedMimeTypes;
         }
 
         public S3 getS3() {

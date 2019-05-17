@@ -2,6 +2,7 @@ package com.lagab.cmanager.web.rest;
 import com.lagab.cmanager.domain.enumeration.EntityType;
 import com.lagab.cmanager.service.AttachmentService;
 import com.lagab.cmanager.service.dto.AttachmentFileDTO;
+import com.lagab.cmanager.store.validator.FileValidator;
 import com.lagab.cmanager.web.rest.errors.BadRequestAlertException;
 import com.lagab.cmanager.web.rest.util.HeaderUtil;
 import com.lagab.cmanager.web.rest.util.PaginationUtil;
@@ -11,6 +12,7 @@ import com.lagab.cmanager.service.AttachmentQueryService;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -43,9 +45,12 @@ public class AttachmentResource {
 
     private final AttachmentQueryService attachmentQueryService;
 
-    public AttachmentResource(AttachmentService attachmentService, AttachmentQueryService attachmentQueryService) {
+    private final FileValidator fileValidator;
+
+    public AttachmentResource(AttachmentService attachmentService, AttachmentQueryService attachmentQueryService,FileValidator fileValidator) {
         this.attachmentService = attachmentService;
         this.attachmentQueryService = attachmentQueryService;
+        this.fileValidator = fileValidator;
     }
 
     /**
@@ -149,6 +154,11 @@ public class AttachmentResource {
      * @param file the attachment File to create
      * @return the ResponseEntity with status 201 (Created) and with body the new attachmentDTO, or with status 400 (Bad Request) if the attachment has already an ID
      * @throws URISyntaxException if the Location URI syntax is incorrect
+     *
+     * TODO : test url http://localhost:8081/api/attachments/upload?entityId=1&entityType=CONTRACT
+     * postman test:
+     * var data = JSON.parse(responseBody);
+     * postman.setEnvironmentVariable("token",data.id_token)
      */
     @RequestMapping(path = "/attachments/upload",
         consumes = {MediaType.APPLICATION_OCTET_STREAM_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE},
@@ -161,6 +171,7 @@ public class AttachmentResource {
         attachmentDTO.setFile(file);
         log.info(file.getOriginalFilename());
         log.debug("REST request to save Attachment : {}", attachmentDTO);
+        fileValidator.validateFile(file);
         attachmentDTO.buildAttachment();
         log.debug(attachmentDTO.getAttachment().toString());
         AttachmentDTO result = attachmentService.save(attachmentDTO.getAttachment());

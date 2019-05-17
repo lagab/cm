@@ -160,6 +160,7 @@ application:
         # Set the part size (in bytes) for S3 multipart uploads. Defaults to 20 mb.
         maxSize: 20971520
         # A file extension of * will permit all file extensions.
-        file-extensions: "*"
-        #file-extensions=.bmp,.css,.doc,.docx,.dot,.gif,.gz,.htm,.html,.jpg,.js,.lar,.odb,.odf,.odg,.odp,.ods,.odt,.pdf,.png,.ppt,.pptx,.rtf,.swf,.sxc,.sxi,.sxw,.tar,.tiff,.tgz,.txt,.vsd,.xls,.xlsx,.xml,.zip,.jrxml
+        #file-extensions: "*"
+        file-extensions: .ico,.bmp,.css,.doc,.docx,.dot,.gif,.gz,.htm,.html,.jpg,.js,.lar,.odb,.odf,.odg,.odp,.ods,.odt,.pdf,.png,.ppt,.pptx,.rtf,.swf,.sxc,.sxi,.sxw,.tar,.tiff,.tgz,.txt,.vsd,.xls,.xlsx,.xml,.zip,.jrxml
+        allowed-mime-types: =text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json,application/xml,text/csv,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.oasis.opendocument.presentation,application/vnd.oasis.opendocument.spreadsheet,application/vnd.oasis.opendocument.text,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,font/woff,font/woff2,font/ttf,font/otf,application/x-rar-compressed,application/x-tar,application/zip,application/x-7z-compressed,image/vnd.microsoft.icon,image/gif,image/x-icon,image/jpeg,image/png,image/svg+xml # Comma-separated list of MIME types that should be used.
         char-blacklist: \\\\,//,:,*,?,\",<,>,|,../,/..

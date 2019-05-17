@@ -1,27 +1,78 @@
 package com.lagab.cmanager.store.validator;
 
+import com.lagab.cmanager.config.ApplicationProperties;
+import com.lagab.cmanager.service.dto.AttachmentFileDTO;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * TODO : to continue
  */
-public abstract class FileValidator {
+@Service
+public class FileValidator {
+
+    private final Logger log = LoggerFactory.getLogger(FileValidator.class);
+
+
+    private ApplicationProperties appProperties;
+
+    public FileValidator(ApplicationProperties appProperties){
+        this.appProperties = appProperties;
+        this.allowedExtensions = appProperties.getStore().getFileExtensionsList();
+        this.allowedMimeTypes = appProperties.getStore().getAllowedMimeTypesList();
+    }
 
     // Validation of file related input
+    //public static final String FILE_NAME_REGEX = "^[a-zA-Z0-9!@#$%^&{}\\[\\]()_+\\-=,.~'` ]{1,255}$";
     public static final String FILE_NAME_REGEX = "^[a-zA-Z0-9!@#$%^&{}\\[\\]()_+\\-=,.~'` ]{1,255}$";
 
     /**
      * The file extension that will be allowed by this validator
      */
-    List<String> allowedExtensions = new ArrayList<String>();
+    Set<String> allowedExtensions = new HashSet<>();
+    Set<String> allowedMimeTypes = new HashSet<>();
 
-    protected abstract boolean isSupportedContentType(String contentType);
+    public void validateFile(MultipartFile file){
+        if ( !isvalidFileName(file.getOriginalFilename()) ){
+            log.error("FileName Invalid");
+        }
+        if ( !isValidExtension(file.getOriginalFilename()) ){
+            log.error("extension invalid " + FilenameUtils.getExtension(file.getOriginalFilename()));
+        }
+         if ( !isSupportedContentType(file.getContentType()) ){
+             log.error("ContentType Invalid "+ file.getContentType());
+         }
+    }
+
+    public  boolean  isSupportedContentType(String contentType){
+        return allowedMimeTypes.contains(contentType);
+    }
+
+    public  boolean isvalidFileName(String fileName){
+        return fileName.matches(FILE_NAME_REGEX);
+    }
+    public  boolean isValidExtension(String fileName){
+        String extension = FilenameUtils.getExtension(fileName);
+        if( appProperties.getStore().getFileExtensions().equals("*")){
+            return true;
+        }else{
+            if( !extension.equals("")){
+                extension = "."+extension;
+            }
+            return allowedExtensions.contains(extension);
+
+        }
+    }
 
     private boolean isSupportedExtension(String fileName){
         return false;
