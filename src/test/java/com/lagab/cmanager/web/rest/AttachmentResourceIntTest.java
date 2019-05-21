@@ -7,6 +7,7 @@ import com.lagab.cmanager.repository.AttachmentRepository;
 import com.lagab.cmanager.service.AttachmentService;
 import com.lagab.cmanager.service.dto.AttachmentDTO;
 import com.lagab.cmanager.service.mapper.AttachmentMapper;
+import com.lagab.cmanager.store.Store;
 import com.lagab.cmanager.store.validator.FileValidator;
 import com.lagab.cmanager.web.rest.errors.ExceptionTranslator;
 import com.lagab.cmanager.service.dto.AttachmentCriteria;
@@ -87,6 +88,9 @@ public class AttachmentResourceIntTest {
     private FileValidator fileValidator;
 
     @Autowired
+    private Store store;
+
+    @Autowired
     private MappingJackson2HttpMessageConverter jacksonMessageConverter;
 
     @Autowired
@@ -108,7 +112,7 @@ public class AttachmentResourceIntTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        final AttachmentResource attachmentResource = new AttachmentResource(attachmentService, attachmentQueryService,fileValidator);
+        final AttachmentResource attachmentResource = new AttachmentResource(attachmentService, attachmentQueryService,fileValidator,store);
         this.restAttachmentMockMvc = MockMvcBuilders.standaloneSetup(attachmentResource)
             .setCustomArgumentResolvers(pageableArgumentResolver)
             .setControllerAdvice(exceptionTranslator)

@@ -1,5 +1,7 @@
 package com.lagab.cmanager.store.impl;
 
+import com.lagab.cmanager.config.ApplicationProperties;
+import com.lagab.cmanager.config.StorageProperties;
 import com.lagab.cmanager.store.Store;
 import com.lagab.cmanager.web.rest.errors.SystemException;
 import com.lagab.cmanager.store.errors.NoSuchFileException;
@@ -10,6 +12,24 @@ import org.apache.commons.io.IOUtils;
 import java.io.*;
 
 public abstract class BaseStore implements Store{
+
+    StorageProperties config;
+
+    public BaseStore(StorageProperties storeConfig){
+        config = storeConfig;
+    }
+
+    public StorageProperties getConfig() {
+        return config;
+    }
+
+    public void setConfig(StorageProperties config) {
+        this.config = config;
+    }
+
+    public String getTempPath(String path){
+        return config.getTmpDir() + StringConstants.SLASH + path;
+    }
 
     /**
      * Adds a directory.
@@ -66,8 +86,9 @@ public abstract class BaseStore implements Store{
         }
         catch (FileNotFoundException fnfe) {
             throw new NoSuchFileException(fileName,fnfe);
-        }
-        finally {
+        } catch (IOException e) {
+            throw new SystemException("IOException", e);
+        } finally {
             try {
                 if (is != null) {
                     is.close();
@@ -88,7 +109,7 @@ public abstract class BaseStore implements Store{
      * @throws SystemException if the file's information was invalid
      */
     @Override
-    public abstract void addFile(String path, String fileName, InputStream is);
+    public abstract void addFile(String path, String fileName, InputStream is) throws SystemException;
 
     /**
      * Deletes a directory.

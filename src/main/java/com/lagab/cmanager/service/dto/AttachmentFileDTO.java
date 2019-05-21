@@ -1,6 +1,7 @@
 package com.lagab.cmanager.service.dto;
 
 import com.lagab.cmanager.domain.enumeration.EntityType;
+import com.lagab.cmanager.web.rest.util.StringConstants;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
@@ -72,6 +73,7 @@ public class AttachmentFileDTO extends AbstractAuditingDTO implements Serializab
         attachment.setContentType(file.getContentType());
         attachment.setFileSize(file.getSize());
         attachment.setDownloads(0);
+        attachment.setDiskFilename(entityType.toString().toLowerCase() + StringConstants.SLASH + entityId );
     }
 
     @Override

@@ -2,21 +2,22 @@ package com.lagab.cmanager.web.rest;
 import com.lagab.cmanager.domain.enumeration.EntityType;
 import com.lagab.cmanager.service.AttachmentService;
 import com.lagab.cmanager.service.dto.AttachmentFileDTO;
+import com.lagab.cmanager.store.Store;
 import com.lagab.cmanager.store.validator.FileValidator;
 import com.lagab.cmanager.web.rest.errors.BadRequestAlertException;
+import com.lagab.cmanager.web.rest.errors.SystemException;
 import com.lagab.cmanager.web.rest.util.HeaderUtil;
 import com.lagab.cmanager.web.rest.util.PaginationUtil;
 import com.lagab.cmanager.service.dto.AttachmentDTO;
 import com.lagab.cmanager.service.dto.AttachmentCriteria;
 import com.lagab.cmanager.service.AttachmentQueryService;
+import com.lagab.cmanager.web.rest.util.StringConstants;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -47,10 +49,13 @@ public class AttachmentResource {
 
     private final FileValidator fileValidator;
 
-    public AttachmentResource(AttachmentService attachmentService, AttachmentQueryService attachmentQueryService,FileValidator fileValidator) {
+    private  final Store store;
+
+    public AttachmentResource(AttachmentService attachmentService, AttachmentQueryService attachmentQueryService,FileValidator fileValidator, Store store) {
         this.attachmentService = attachmentService;
         this.attachmentQueryService = attachmentQueryService;
         this.fileValidator = fileValidator;
+        this.store = store;
     }
 
     /**
@@ -163,7 +168,7 @@ public class AttachmentResource {
     @RequestMapping(path = "/attachments/upload",
         consumes = {MediaType.APPLICATION_OCTET_STREAM_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE},
         method = RequestMethod.POST)
-    public ResponseEntity<AttachmentDTO> uploadAttachment(@NotNull @RequestParam long entityId, @NotNull  @RequestParam EntityType entityType , @RequestPart MultipartFile file ) throws URISyntaxException {
+    public ResponseEntity<AttachmentDTO> uploadAttachment(@NotNull @RequestParam long entityId, @NotNull  @RequestParam EntityType entityType , @RequestPart MultipartFile file ) throws URISyntaxException, SystemException, IOException {
 
         AttachmentFileDTO attachmentDTO = new AttachmentFileDTO();
         attachmentDTO.setEntityId(entityId);
@@ -173,8 +178,20 @@ public class AttachmentResource {
         log.debug("REST request to save Attachment : {}", attachmentDTO);
         fileValidator.validateFile(file);
         attachmentDTO.buildAttachment();
+        store.addFile(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ),file.getOriginalFilename(),file.getInputStream(),false);
+        store.move(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ), store.getPath(attachmentDTO.getAttachment().getDiskFilename()), file.getOriginalFilename());
+
+        attachmentDTO.getAttachment().setDiskFilename(null);
         log.debug(attachmentDTO.getAttachment().toString());
+
         AttachmentDTO result = attachmentService.save(attachmentDTO.getAttachment());
+        if(result != null){
+            //on deplace le fichier temporaire vers sa reele destination
+            store.move(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ), store.getPath(attachmentDTO.getAttachment().getDiskFilename()), file.getOriginalFilename());
+
+        }else{//si ça se passe mal on revert la creation de la piece jointe
+            store.deleteFile(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ),file.getOriginalFilename());
+        }
         return ResponseEntity.created(new URI("/api/attachments/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);

@@ -3,6 +3,7 @@ package com.lagab.cmanager;
 import com.lagab.cmanager.config.ApplicationProperties;
 import com.lagab.cmanager.config.DefaultProfileUtil;
 
+import com.lagab.cmanager.config.StorageProperties;
 import io.github.jhipster.config.JHipsterConstants;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 @SpringBootApplication
-@EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class})
+@EnableConfigurationProperties({LiquibaseProperties.class, ApplicationProperties.class, StorageProperties.class})
 public class CmApp {
 
     private static final Logger log = LoggerFactory.getLogger(CmApp.class);

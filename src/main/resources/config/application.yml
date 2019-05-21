@@ -139,9 +139,10 @@ jhipster:
 
 application:
     store:
-        impl: com.lagab.cmanager.service.store.FileSystemStore
-        root-dir: /data
-        tmp-dir: /tmp
+        impl: com.lagab.cmanager.store.impl.FileSystemStore
+        root-dir: C:\Users\gladislas\Documents\Fragments
+        upload-dir: ${application.store.root-dir}/upload
+        tmp-dir: ${application.store.root-dir}/tmp
         s3:
             accessKey:
             secretKey:
