@@ -1,22 +1,24 @@
 package com.lagab.cmanager.store.impl;
 
-import com.lagab.cmanager.config.ApplicationProperties;
 import com.lagab.cmanager.config.StorageProperties;
 import com.lagab.cmanager.store.Store;
 import com.lagab.cmanager.web.rest.errors.SystemException;
 import com.lagab.cmanager.store.errors.NoSuchFileException;
-import com.lagab.cmanager.store.util.FileUtil;
 import com.lagab.cmanager.web.rest.util.StringConstants;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
 public abstract class BaseStore implements Store{
 
-    StorageProperties config;
+    protected final Logger log = LoggerFactory.getLogger(BaseStore.class);
+    protected StorageProperties config;
 
     public BaseStore(StorageProperties storeConfig){
-        config = storeConfig;
+        this.config = storeConfig;
     }
 
     public StorageProperties getConfig() {
@@ -29,6 +31,10 @@ public abstract class BaseStore implements Store{
 
     public String getTempPath(String path){
         return config.getTmpDir() + StringConstants.SLASH + path;
+    }
+
+    public String getFileNameDir(String path, String fileName){
+        return path + StringConstants.SLASH + fileName;
     }
 
     /**
@@ -51,20 +57,7 @@ public abstract class BaseStore implements Store{
      */
     @Override
     public void addFile(String path, String fileName, byte[] bytes) throws SystemException {
-
-        File file = null;
-
-        try {
-            file = FileUtil.createTempFile(bytes);
-
-            addFile(path, fileName, file);
-        }
-        catch (SystemException ioe) {
-            throw new SystemException("Unable to write temporary file", ioe);
-        }
-        finally {
-            FileUtil.delete(file);
-        }
+        addFile(path, fileName, new ByteArrayInputStream(bytes));
     }
 
     /**
@@ -78,7 +71,7 @@ public abstract class BaseStore implements Store{
     @Override
     public void addFile(String path, String fileName, File file) throws SystemException {
 
-        InputStream is = null;
+        InputStream is;
 
         try {
             is = new FileInputStream(file);
@@ -86,18 +79,8 @@ public abstract class BaseStore implements Store{
         }
         catch (FileNotFoundException fnfe) {
             throw new NoSuchFileException(fileName,fnfe);
-        } catch (IOException e) {
-            throw new SystemException("IOException", e);
-        } finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            }
-            catch (IOException ioe) {
-                throw new SystemException("Unable to read bytes", ioe);
-            }
         }
+
     }
 
     /**
@@ -130,7 +113,7 @@ public abstract class BaseStore implements Store{
      * @throws SystemException if the file's information was invalid
      */
     @Override
-    public abstract void deleteFile(String path, String fileName);
+    public abstract void deleteFile(String path, String fileName) throws SystemException;
 
     /**
      * Returns the file as a {@link File} object.
@@ -148,7 +131,7 @@ public abstract class BaseStore implements Store{
      * @throws SystemException if the file's information was invalid
      */
     @Override
-    public File getFile(String path, String fileName) {
+    public File getFile(String path, String fileName) throws SystemException{
         return getFile(path, fileName, StringConstants.BLANK);
     }
 
@@ -162,11 +145,6 @@ public abstract class BaseStore implements Store{
      * not supported, this method will throw an {@link UnsupportedOperationException}.
      * </p>
      *
-     * <p>
-     * This method should be overrided if a more optimized approach can be used
-     * (e.g., {@link FileSystemStore#getFile(String, String, String)}).
-     * </p>
-     *
      * @param  path the path of file
      * @param  fileName the file's name
      * @param  versionLabel the file's version label
@@ -174,7 +152,7 @@ public abstract class BaseStore implements Store{
      * @throws SystemException if the file's information was invalid
      */
     @Override
-    public File getFile(String path, String fileName, String versionLabel) {
+    public File getFile(String path, String fileName, String versionLabel)  throws SystemException{
         throw new UnsupportedOperationException();
     }
 
@@ -189,7 +167,7 @@ public abstract class BaseStore implements Store{
     @Override
     public byte[] getFileAsBytes(String path, String fileName) throws SystemException {
 
-        byte[] bytes = null;
+        byte[] bytes;
 
         try {
             InputStream is = getFileAsStream(path, fileName);
@@ -214,7 +192,7 @@ public abstract class BaseStore implements Store{
     @Override
     public byte[] getFileAsBytes(String path, String fileName, String versionLabel) throws SystemException {
 
-        byte[] bytes = null;
+        byte[] bytes;
 
         try {
             InputStream is = getFileAsStream(path, fileName, versionLabel);
@@ -235,7 +213,7 @@ public abstract class BaseStore implements Store{
      * @throws SystemException if the file's information was invalid
      */
     @Override
-    public InputStream getFileAsStream(String path, String fileName){
+    public InputStream getFileAsStream(String path, String fileName) throws SystemException{
         return getFileAsStream(path, fileName, StringConstants.BLANK);
     }
 
@@ -249,7 +227,8 @@ public abstract class BaseStore implements Store{
      * @throws SystemException if the file's information was invalid
      */
     @Override
-    public abstract InputStream getFileAsStream(String path, String fileName, String versionLabel);
+    public abstract InputStream getFileAsStream(String path, String fileName, String versionLabel) throws SystemException;
+
 
     /**
      * Returns all files of the directory.
@@ -257,10 +236,19 @@ public abstract class BaseStore implements Store{
      * @param  path the path of file
      * @param  dirName the directory's name
      * @return Returns all files of the directory
-     * @throws SystemException if the directory's information was invalid
      */
     @Override
-    public abstract String[] getFileNames(String path, String dirName);
+    public String[] getFileNames(String path, String dirName) {
+        return getFileNames( getFileNameDir(path,dirName) );
+    }
+    /**
+     * Returns all files of the directory.
+     *
+     * @param  dirPath the directory's path
+     * @return Returns all files of the directory
+     */
+    @Override
+    public abstract String[] getFileNames(String dirPath);
 
     /**
      * Returns the size of the file.
@@ -268,7 +256,6 @@ public abstract class BaseStore implements Store{
      * @param  path the path of file
      * @param  fileName the file's name
      * @return Returns the size of the file
-     * @throws SystemException if the file's information was invalid
      */
     @Override
     public abstract long getFileSize(String path, String fileName);
@@ -278,21 +265,23 @@ public abstract class BaseStore implements Store{
      *
      * @param  path the path of file
      * @param  dirName the directory's name
-     * @return <code>true</code> if the directory exists; <code>false</code>
-     *         otherwise
-     * @throws SystemException if the directory's information was invalid
+     * @return <code>true</code> if the directory exists; <code>false</code> otherwise
      */
     @Override
     public abstract boolean hasDirectory(String path, String dirName);
 
+
+    public String getVersionFileName(String fileName, String versionLabel){
+        String basename = FilenameUtils.getBaseName(fileName);
+        String extension = FilenameUtils.getExtension(fileName);
+        return basename + StringConstants.DASH + versionLabel + StringConstants.PERIOD + extension;
+    }
     /**
      * Returns <code>true</code> if the file exists.
      *
      * @param  path the path of file
      * @param  fileName the file's name
-     * @return <code>true</code> if the file exists; <code>false</code>
-     *         otherwise
-     * @throws SystemException if the file's information was invalid
+     * @return <code>true</code> if the file exists; <code>false</code> otherwise
      */
     @Override
     public boolean hasFile(String path, String fileName){
@@ -305,9 +294,7 @@ public abstract class BaseStore implements Store{
      * @param  path the path of file
      * @param  fileName the file's name
      * @param  versionLabel the file's version label
-     * @return <code>true</code> if the file exists; <code>false</code>
-     *         otherwise
-     * @throws SystemException if the file's information was invalid
+     * @return <code>true</code> if the file exists; <code>false</code> otherwise
      */
     @Override
     public abstract boolean hasFile(String path, String fileName,String versionLabel);
@@ -318,7 +305,7 @@ public abstract class BaseStore implements Store{
      * @param  destDir the new directory's name
      */
     @Override
-    public void move(String srcDir, String destDir){
+    public void move(String srcDir, String destDir) throws SystemException {
 
     }
 

@@ -4,7 +4,6 @@ import com.lagab.cmanager.config.StorageProperties;
 import com.lagab.cmanager.web.rest.errors.SystemException;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 
 public interface Store {
@@ -30,41 +29,46 @@ public interface Store {
 
     public void deleteDirectory(String path, String dirName) throws SystemException;
 
-    public void deleteFile(String path, String fileName);
+    public void deleteFile(String path, String fileName) throws SystemException;
 
-    public void deleteFile(String path, String fileName, String versionLabel);
+    public void deleteFile(String path, String fileName, String versionLabel) throws SystemException;
+    public void deleteFile(String path, String fileName,  boolean relative) throws SystemException;
 
-    public File getFile(String path, String fileName);
+    public File getFile(String path, String fileName) throws SystemException;
 
-    public File getFile(String path, String fileName,String versionLabel);
+    public File getFile(String path, String fileName,String versionLabel) throws SystemException;
 
     public byte[] getFileAsBytes(String path, String fileName) throws SystemException;
 
     public byte[] getFileAsBytes(String path, String fileName, String versionLabel) throws SystemException;
 
-    public InputStream getFileAsStream(String path, String fileName);
+    public InputStream getFileAsStream(String path, String fileName) throws SystemException;
 
-    public InputStream getFileAsStream(String path, String fileName, String versionLabel);
+    public InputStream getFileAsStream(String path, String fileName, String versionLabel) throws SystemException;
 
+    public String[] getFileNames(String dirPath);
     public String[] getFileNames(String path, String dirName);
 
     public long getFileSize(String path, String fileName);
 
     public boolean hasDirectory(String path, String dirName);
 
+    public String getVersionFileName(String fileName, String versionLabel);
+
     public boolean hasFile(String path, String fileName);
 
     public boolean hasFile(String path, String fileName, String versionLabel);
 
-    public void move(String srcDir, String destDir);
+    public void move(String srcDir, String destDir) throws SystemException;
 
     public void move(String srcDir, String destDir, String fileName) throws SystemException;
 
-    public void updateFile(String path, String fileName, String versionLabel, byte[] bytes);
+    public void updateFile(String path, String fileName, String versionLabel, byte[] bytes) throws SystemException;
 
-    public void updateFile(String path, String fileName, String versionLabel, File file);
+    public void updateFile(String path, String fileName, String versionLabel, File file) throws SystemException;
 
-    public void updateFile(String path, String fileName, String versionLabel, InputStream is);
+    public void updateFile(String path, String fileName, String versionLabel, InputStream is) throws SystemException;
 
+    public void updateFile(String path, String fileName, InputStream is) throws SystemException;
 
 }

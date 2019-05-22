@@ -8,6 +8,7 @@ public class StringConstants {
     public static final String BLANK = "";
     public static final String SLASH = "/";
     public static final String COMMA = ",";
+    public static final String DASH = "-";
     public static final String STAR = "*";
     public static final String AT = "@";
     public static final String PERIOD = ".";

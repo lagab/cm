@@ -5,11 +5,10 @@ import com.lagab.cmanager.web.rest.errors.SystemException;
 import com.lagab.cmanager.web.rest.util.StringConstants;
 import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 
 /**
  * @author gabriel
@@ -22,10 +21,6 @@ public class FileSystemStore extends BaseStore {
         super(storeConfig);
     }
 
-    protected File getFileNameDir(String path, String fileName) {
-        File fileNameDir = new File(  path + StringConstants.SLASH + fileName);
-        return fileNameDir;
-    }
 
     public String getPath(String path){
         return getPath(path,true);
@@ -37,26 +32,22 @@ public class FileSystemStore extends BaseStore {
         return path;
     }
 
-
     protected File getDirNameDir(String path, String dirName) {
-        return getFileNameDir(path, dirName);
+        return new File(getFileNameDir(path,dirName));
     }
 
     protected File getDirNameDir(long workspaceId, long projectId, String dirName) {
         File repositoryDir = getRepositoryDir(workspaceId, projectId);
-        return getFileNameDir(repositoryDir.getPath() , dirName);
+        return getDirNameDir(repositoryDir.getPath() , dirName);
     }
 
     protected File getRepositoryDir(long workspaceId, long repositoryId) {
-        File repositoryDir = new File(workspaceId + StringConstants.SLASH + repositoryId);
-        return repositoryDir;
+        return new File(workspaceId + StringConstants.SLASH + repositoryId);
     }
 
     @Override
     public void addDirectory(String path, String dirName) throws SystemException {
-
         File dirNameDir = getDirNameDir(path, dirName);
-
         if (dirNameDir.exists()) {
             return;
         }
@@ -85,7 +76,7 @@ public class FileSystemStore extends BaseStore {
 
     @Override
     public void copyFileVersion(String path, String fileName, String fromVersionLabel, String toVersionLabel) {
-
+        log.error("Unsupported Operation");
     }
 
     @Override
@@ -95,71 +86,103 @@ public class FileSystemStore extends BaseStore {
             try {
                 FileUtils.deleteDirectory(new File(completePath));
             } catch (IOException e) {
-                new SystemException(e);
+                throw new SystemException(e);
             }
         }
     }
 
     @Override
-    public void deleteFile(String path, String fileName) {
-        File targetFile = new File(getPath(path,false) + StringConstants.SLASH + fileName);
+    public void deleteFile(String path, String fileName) throws SystemException{
+        deleteFile(path,fileName,false);
+    }
+
+    public void deleteFile(String path, String fileName, boolean relative) throws SystemException{
+        File targetFile = new File(getPath(path,relative) + StringConstants.SLASH + fileName);
         FileUtils.deleteQuietly(targetFile);
-        if(isEmptyDirectory( getPath(path, false) )) {
+        if(isEmptyDirectory( getPath(path, relative) )) {
             try {
-                FileUtils.deleteDirectory(new File(getPath(path, false)));
+                FileUtils.deleteDirectory(new File(getPath(path, relative)));
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new SystemException(e);
             }
         }
     }
 
     @Override
-    public void deleteFile(String path, String fileName, String versionLabel) {
-
+    public void deleteFile(String path, String fileName, String versionLabel) throws SystemException {
+        log.error("Unsupported Operation");
     }
 
     @Override
-    public InputStream getFileAsStream(String path, String fileName, String versionLabel) {
+    public InputStream getFileAsStream(String path, String fileName, String versionLabel) throws SystemException{
+        log.error("Unsupported Operation");
         return null;
     }
 
     @Override
-    public String[] getFileNames(String path, String dirName) {
-        return new String[0];
+    public String[] getFileNames(String dirPath) {
+        File[] files = Paths.get(dirPath).toFile().listFiles();
+        if( files == null || files.length == 0){
+            return new String[0];
+        }
+        return Arrays.stream(files).map(File::getName).toArray(String[]::new);
     }
 
     @Override
     public long getFileSize(String path, String fileName) {
-        return 0;
+        return FileUtils.sizeOf(getDirNameDir(path,fileName));
     }
 
     @Override
     public boolean hasDirectory(String path, String dirName) {
-        return false;
+        return Files.isDirectory(Paths.get(getFileNameDir(path,dirName)));
     }
 
     @Override
     public boolean hasFile(String path, String fileName, String versionLabel) {
-        return false;
+        String versionFileName = getVersionFileName(fileName,versionLabel);
+        return Files.isRegularFile(Paths.get(getFileNameDir(path,versionFileName)));
     }
 
     @Override
-    public void updateFile(String path, String fileName, String versionLabel, byte[] bytes) {
-
+    public void updateFile(String path, String fileName, String versionLabel, byte[] bytes) throws SystemException {
+        updateFile(path,fileName,versionLabel,new ByteArrayInputStream(bytes));
     }
 
     @Override
-    public void updateFile(String path, String fileName, String versionLabel, File file) {
-
+    public void updateFile(String path, String fileName, String versionLabel, File file) throws SystemException {
+        try {
+            updateFile(path,fileName,versionLabel, FileUtils.openInputStream(file));
+        } catch (IOException e) {
+            throw new SystemException(e);
+        }
     }
 
     @Override
-    public void updateFile(String path, String fileName, String versionLabel, InputStream is) {
-
+    public void updateFile(String path, String fileName, String versionLabel, InputStream is) throws SystemException{
+        String versionFileName = getVersionFileName(fileName,versionLabel);
+        updateFile(path,versionFileName,is);
     }
 
     @Override
-    public void move(String srcDir, String destDir){
+    public void updateFile(String path, String fileName, InputStream is) throws SystemException{
+        File file = getDirNameDir(getPath(path),fileName);
+        try {
+            FileUtils.copyInputStreamToFile(is,file);
+        } catch (IOException e) {
+            throw new SystemException(e);
+        }
+    }
+
+    @Override
+    public void move(String srcDir, String destDir) throws SystemException {
+        File sourceFile = new File(getPath(srcDir));
+        File targetFile = new File(getPath(destDir));
+        try {
+            FileUtils.moveDirectory(sourceFile,targetFile);
+        } catch (IOException e) {
+            throw new SystemException(e);
+        }
     }
 
 
@@ -178,6 +201,6 @@ public class FileSystemStore extends BaseStore {
     }
 
     public static boolean isEmptyDirectory(String dirName){
-        return Paths.get(dirName).toFile().listFiles().length == 0;
+        return (!Files.isDirectory(Paths.get(dirName))) || Paths.get(dirName).toFile()== null ||  Paths.get(dirName).toFile().listFiles().length == 0;
     }
 }
