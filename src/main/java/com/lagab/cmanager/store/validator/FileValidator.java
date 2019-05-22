@@ -1,7 +1,15 @@
 package com.lagab.cmanager.store.validator;
 
 import com.lagab.cmanager.config.ApplicationProperties;
+import com.lagab.cmanager.config.StorageProperties;
 import com.lagab.cmanager.service.dto.AttachmentFileDTO;
+import com.lagab.cmanager.store.errors.DuplicateFileException;
+import com.lagab.cmanager.store.errors.FileNameException;
+import com.lagab.cmanager.store.errors.InvalidContentTypeException;
+import com.lagab.cmanager.store.errors.InvalidExtensionException;
+import com.lagab.cmanager.web.rest.errors.SystemException;
+import com.lagab.cmanager.web.rest.util.StringConstants;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -13,6 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -24,16 +35,14 @@ public class FileValidator {
     private final Logger log = LoggerFactory.getLogger(FileValidator.class);
 
 
-    private ApplicationProperties appProperties;
+    private StorageProperties storageProperties;
 
-    public FileValidator(ApplicationProperties appProperties){
-        this.appProperties = appProperties;
-        this.allowedExtensions = appProperties.getStore().getFileExtensionsList();
-        this.allowedMimeTypes = appProperties.getStore().getAllowedMimeTypesList();
+    public FileValidator(StorageProperties storageProperties){
+        this.storageProperties = storageProperties;
+        this.allowedExtensions = storageProperties.getFileExtensionsList();
+        this.allowedMimeTypes = storageProperties.getAllowedMimeTypesList();
     }
 
-    // Validation of file related input
-    //public static final String FILE_NAME_REGEX = "^[a-zA-Z0-9!@#$%^&{}\\[\\]()_+\\-=,.~'` ]{1,255}$";
     public static final String FILE_NAME_REGEX = "^[a-zA-Z0-9!@#$%^&{}\\[\\]()_+\\-=,.~'` ]{1,255}$";
 
     /**
@@ -42,17 +51,34 @@ public class FileValidator {
     Set<String> allowedExtensions = new HashSet<>();
     Set<String> allowedMimeTypes = new HashSet<>();
 
-    public void validateFile(MultipartFile file){
+
+    public void validateFile(byte[] bytes) throws SystemException {
+
+    }
+
+    public void validateFile(InputStream is) throws SystemException {
+
+    }
+
+    public void validateFile(MultipartFile file) throws SystemException {
         if ( !isvalidFileName(file.getOriginalFilename()) ){
-            log.error("FileName Invalid");
+            throw  new FileNameException("FileName Invalid :"+ file.getOriginalFilename());
         }
         if ( !isValidExtension(file.getOriginalFilename()) ){
-            log.error("extension invalid " + FilenameUtils.getExtension(file.getOriginalFilename()));
+            throw  new InvalidExtensionException("extension "+ FilenameUtils.getExtension(file.getOriginalFilename() +" are invalid "));
         }
          if ( !isSupportedContentType(file.getContentType()) ){
-             log.error("ContentType Invalid "+ file.getContentType());
+             throw  new InvalidContentTypeException("Content Type "+ file.getContentType() +" are invalid ");
          }
     }
+
+    public void validateFile(String path, MultipartFile file) throws SystemException{
+        validateFile(file);
+        if( Files.exists(Paths.get(path + StringConstants.SLASH + file.getOriginalFilename())) ){
+            throw new DuplicateFileException("File already exists :" + file.getOriginalFilename());
+        }
+    }
+
 
     public  boolean  isSupportedContentType(String contentType){
         return allowedMimeTypes.contains(contentType);
@@ -63,7 +89,7 @@ public class FileValidator {
     }
     public  boolean isValidExtension(String fileName){
         String extension = FilenameUtils.getExtension(fileName);
-        if( appProperties.getStore().getFileExtensions().equals("*")){
+        if( storageProperties.getFileExtensions().equals("*")){
             return true;
         }else{
             if( !extension.equals("")){

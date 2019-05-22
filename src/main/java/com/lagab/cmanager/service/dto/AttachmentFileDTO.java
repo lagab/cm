@@ -67,7 +67,7 @@ public class AttachmentFileDTO extends AbstractAuditingDTO implements Serializab
 
     public void buildAttachment() {
         this.attachment = new AttachmentDTO();
-        attachment.setFilename(file.getName());
+        attachment.setFilename(file.getOriginalFilename());
         attachment.setEntityId(entityId);
         attachment.setEntityType(entityType);
         attachment.setContentType(file.getContentType());

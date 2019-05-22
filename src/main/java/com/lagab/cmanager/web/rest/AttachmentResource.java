@@ -174,24 +174,21 @@ public class AttachmentResource {
         attachmentDTO.setEntityId(entityId);
         attachmentDTO.setEntityType(entityType);
         attachmentDTO.setFile(file);
-        log.info(file.getOriginalFilename());
-        log.debug("REST request to save Attachment : {}", attachmentDTO);
-        fileValidator.validateFile(file);
         attachmentDTO.buildAttachment();
-        store.addFile(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ),file.getOriginalFilename(),file.getInputStream(),false);
-        store.move(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ), store.getPath(attachmentDTO.getAttachment().getDiskFilename()), file.getOriginalFilename());
 
-        attachmentDTO.getAttachment().setDiskFilename(null);
-        log.debug(attachmentDTO.getAttachment().toString());
+        log.debug("REST request to save Attachment : {}", attachmentDTO);
+
+        fileValidator.validateFile(store.getPath(attachmentDTO.getAttachment().getDiskFilename()),file);
+        store.addFile(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ),file.getOriginalFilename(),file.getInputStream(),false);
 
         AttachmentDTO result = attachmentService.save(attachmentDTO.getAttachment());
         if(result != null){
             //on deplace le fichier temporaire vers sa reele destination
             store.move(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ), store.getPath(attachmentDTO.getAttachment().getDiskFilename()), file.getOriginalFilename());
-
-        }else{//si ça se passe mal on revert la creation de la piece jointe
-            store.deleteFile(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ),file.getOriginalFilename());
         }
+         //si ça se passe mal on revert la creation de la piece jointe
+         store.deleteFile(store.getTempPath(attachmentDTO.getAttachment().getDiskFilename()), file.getOriginalFilename());
+
         return ResponseEntity.created(new URI("/api/attachments/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);

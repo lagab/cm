@@ -1,7 +1,6 @@
 package com.lagab.cmanager.store.impl;
 
 import com.lagab.cmanager.config.StorageProperties;
-import com.lagab.cmanager.store.util.FileUtil;
 import com.lagab.cmanager.web.rest.errors.SystemException;
 import com.lagab.cmanager.web.rest.util.StringConstants;
 import org.apache.commons.io.FileUtils;
@@ -9,6 +8,8 @@ import org.apache.commons.io.FileUtils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * @author gabriel
@@ -30,7 +31,7 @@ public class FileSystemStore extends BaseStore {
         return getPath(path,true);
     }
     public String getPath(String path, boolean relative){
-        if( relative){
+        if( relative ){
             return getConfig().getUploadDir()+ StringConstants.SLASH + path;
         }
         return path;
@@ -83,33 +84,33 @@ public class FileSystemStore extends BaseStore {
     }
 
     @Override
-    public void addFile(String path, String fileName, boolean validateFileExtension, byte[] bytes) {
-
-    }
-
-    @Override
-    public void addFile(String path, String fileName, boolean validateFileExtension, File file) {
-
-    }
-
-    @Override
-    public void addFile(String path, String fileName, boolean validateFileExtension, InputStream is) {
-
-    }
-
-    @Override
     public void copyFileVersion(String path, String fileName, String fromVersionLabel, String toVersionLabel) {
 
     }
 
     @Override
-    public void deleteDirectory(String path, String dirName) {
-
+    public void deleteDirectory(String path, String dirName) throws SystemException {
+        String completePath = path + StringConstants.SLASH + dirName;
+        if( Files.isDirectory(Paths.get(completePath))){
+            try {
+                FileUtils.deleteDirectory(new File(completePath));
+            } catch (IOException e) {
+                new SystemException(e);
+            }
+        }
     }
 
     @Override
     public void deleteFile(String path, String fileName) {
-
+        File targetFile = new File(getPath(path,false) + StringConstants.SLASH + fileName);
+        FileUtils.deleteQuietly(targetFile);
+        if(isEmptyDirectory( getPath(path, false) )) {
+            try {
+                FileUtils.deleteDirectory(new File(getPath(path, false)));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -158,26 +159,6 @@ public class FileSystemStore extends BaseStore {
     }
 
     @Override
-    public void validate(String fileName, boolean validateFileExtension) {
-
-    }
-
-    @Override
-    public void validate(String fileName, boolean validateFileExtension, byte[] bytes) {
-
-    }
-
-    @Override
-    public void validate(String fileName, boolean validateFileExtension, File file) {
-
-    }
-
-    @Override
-    public void validate(String fileName, boolean validateFileExtension, InputStream is) {
-
-    }
-
-    @Override
     public void move(String srcDir, String destDir){
     }
 
@@ -187,10 +168,16 @@ public class FileSystemStore extends BaseStore {
         File targetFile = new File(getPath(destDir,false));
         try {
             FileUtils.moveFileToDirectory(sourceFile,targetFile,true);
-            FileUtils.deleteDirectory(new File(getPath(srcDir,false)));
+            if(isEmptyDirectory( getPath(srcDir, false) )) {
+                FileUtils.deleteDirectory(new File(getPath(srcDir, false)));
+            }
         } catch (IOException e) {
             throw new SystemException(e);
         }
 
+    }
+
+    public static boolean isEmptyDirectory(String dirName){
+        return Paths.get(dirName).toFile().listFiles().length == 0;
     }
 }

@@ -119,7 +119,7 @@ public abstract class BaseStore implements Store{
      * @throws SystemException if the directory's information was invalid
      */
     @Override
-    public abstract void deleteDirectory(String path, String dirName);
+    public abstract void deleteDirectory(String path, String dirName) throws SystemException;
 
     /**
      * Deletes a file. If a file has multiple versions, all versions will be

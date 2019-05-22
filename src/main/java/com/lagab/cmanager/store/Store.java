@@ -26,13 +26,9 @@ public interface Store {
     public void addFile(String path,String fileName, InputStream is) throws SystemException;
     public void addFile(String path,String fileName, InputStream is,boolean relative) throws SystemException;
 
-    public void addFile(String path,String fileName, boolean validateFileExtension, byte[] bytes);
-    public void addFile(String path,String fileName, boolean validateFileExtension, File file);
-    public void addFile(String path,String fileName, boolean validateFileExtension, InputStream is);
-
     public void copyFileVersion(String path, String fileName,String fromVersionLabel, String toVersionLabel);
 
-    public void deleteDirectory(String path, String dirName);
+    public void deleteDirectory(String path, String dirName) throws SystemException;
 
     public void deleteFile(String path, String fileName);
 
@@ -69,14 +65,6 @@ public interface Store {
     public void updateFile(String path, String fileName, String versionLabel, File file);
 
     public void updateFile(String path, String fileName, String versionLabel, InputStream is);
-
-    public void validate(String fileName, boolean validateFileExtension);
-
-    public void validate(String fileName, boolean validateFileExtension, byte[] bytes);
-
-    public void validate(String fileName, boolean validateFileExtension, File file);
-
-    public void validate(String fileName, boolean validateFileExtension, InputStream is);
 
 
 }
