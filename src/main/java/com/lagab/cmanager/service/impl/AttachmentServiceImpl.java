@@ -5,6 +5,8 @@ import com.lagab.cmanager.domain.Attachment;
 import com.lagab.cmanager.repository.AttachmentRepository;
 import com.lagab.cmanager.service.dto.AttachmentDTO;
 import com.lagab.cmanager.service.mapper.AttachmentMapper;
+import com.lagab.cmanager.store.Store;
+import com.lagab.cmanager.web.rest.errors.SystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,9 +30,12 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     private final AttachmentMapper attachmentMapper;
 
-    public AttachmentServiceImpl(AttachmentRepository attachmentRepository, AttachmentMapper attachmentMapper) {
+    private final Store store;
+
+    public AttachmentServiceImpl(AttachmentRepository attachmentRepository, AttachmentMapper attachmentMapper, Store store) {
         this.attachmentRepository = attachmentRepository;
         this.attachmentMapper = attachmentMapper;
+        this.store = store;
     }
 
     /**
@@ -84,6 +89,12 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Override
     public void delete(Long id) {
         log.debug("Request to delete Attachment : {}", id);
+        Attachment attachment = attachmentRepository.findById(id).get();
+        try {
+            store.deleteFile(attachment.getDiskFilename(),attachment.getFilename());
+        } catch (SystemException e) {
+            log.error(e.getMessage(),e);
+        }
         attachmentRepository.deleteById(id);
     }
 }

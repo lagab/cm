@@ -187,7 +187,7 @@ public class AttachmentResource {
             store.move(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ), store.getPath(attachmentDTO.getAttachment().getDiskFilename()), file.getOriginalFilename());
         }
          //si ça se passe mal on revert la creation de la piece jointe
-         store.deleteFile(store.getTempPath(attachmentDTO.getAttachment().getDiskFilename()), file.getOriginalFilename());
+         store.deleteFile(store.getTempPath(attachmentDTO.getAttachment().getDiskFilename()), file.getOriginalFilename(),false);
 
         return ResponseEntity.created(new URI("/api/attachments/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))

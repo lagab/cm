@@ -93,7 +93,7 @@ public class FileSystemStore extends BaseStore {
 
     @Override
     public void deleteFile(String path, String fileName) throws SystemException{
-        deleteFile(path,fileName,false);
+        deleteFile(path,fileName,true);
     }
 
     public void deleteFile(String path, String fileName, boolean relative) throws SystemException{
