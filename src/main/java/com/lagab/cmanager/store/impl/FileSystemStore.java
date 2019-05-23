@@ -110,13 +110,17 @@ public class FileSystemStore extends BaseStore {
 
     @Override
     public void deleteFile(String path, String fileName, String versionLabel) throws SystemException {
-        log.error("Unsupported Operation");
+        deleteFile(path,getVersionFileName(fileName,versionLabel),true);
     }
 
     @Override
     public InputStream getFileAsStream(String path, String fileName, String versionLabel) throws SystemException{
-        log.error("Unsupported Operation");
-        return null;
+        File file = new File(getFileNameDir(getPath(path),getVersionFileName(fileName,versionLabel)));
+        try {
+            return  FileUtils.openInputStream(file);
+        } catch (IOException e) {
+            throw new SystemException(e);
+        }
     }
 
     @Override

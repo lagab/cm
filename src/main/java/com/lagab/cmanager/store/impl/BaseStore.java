@@ -272,6 +272,9 @@ public abstract class BaseStore implements Store{
 
 
     public String getVersionFileName(String fileName, String versionLabel){
+        if(versionLabel.equals(StringConstants.BLANK)){
+            return fileName;
+        }
         String basename = FilenameUtils.getBaseName(fileName);
         String extension = FilenameUtils.getExtension(fileName);
         return basename + StringConstants.DASH + versionLabel + StringConstants.PERIOD + extension;

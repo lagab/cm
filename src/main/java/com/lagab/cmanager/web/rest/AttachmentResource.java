@@ -1,9 +1,11 @@
 package com.lagab.cmanager.web.rest;
+import com.lagab.cmanager.domain.Attachment;
 import com.lagab.cmanager.domain.enumeration.EntityType;
 import com.lagab.cmanager.service.AttachmentService;
 import com.lagab.cmanager.service.dto.AttachmentFileDTO;
 import com.lagab.cmanager.store.Store;
 import com.lagab.cmanager.store.validator.FileValidator;
+import com.lagab.cmanager.web.rest.errors.AttachmentNotFoundException;
 import com.lagab.cmanager.web.rest.errors.BadRequestAlertException;
 import com.lagab.cmanager.web.rest.errors.SystemException;
 import com.lagab.cmanager.web.rest.util.HeaderUtil;
@@ -192,5 +194,16 @@ public class AttachmentResource {
         return ResponseEntity.created(new URI("/api/attachments/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
             .body(result);
+    }
+
+
+
+    @GetMapping("/attachments//{id}/download")
+    public ResponseEntity<byte[]> downloadAttachment(@PathVariable Long id) throws SystemException {
+        AttachmentDTO attachment = attachmentService.findOne(id).orElseThrow(AttachmentNotFoundException::new);
+        return ResponseEntity.ok()
+            .contentType(MediaType.parseMediaType(attachment.getContentType()))
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachment.getFilename() + "\"")
+            .body(store.getFileAsBytes(attachment.getDiskFilename(),attachment.getFilename()));
     }
 }
