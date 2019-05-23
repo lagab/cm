@@ -9,10 +9,11 @@ import com.lagab.cmanager.web.rest.errors.SystemException;
 public class InvalidContentTypeException extends SystemException{
 
     public InvalidContentTypeException() {
+        super();
     }
 
-    public InvalidContentTypeException(String message) {
-        super(message);
+    public InvalidContentTypeException(String contentType) {
+        super("Content Type "+ contentType +" are invalid ");
     }
 
     public InvalidContentTypeException(String message, Throwable cause) {

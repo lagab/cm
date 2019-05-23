@@ -44,20 +44,20 @@ public class FileValidator {
 
     public void validateFile(MultipartFile file) throws SystemException {
         if ( !isvalidFileName(file.getOriginalFilename()) ){
-            throw  new FileNameException("FileName Invalid :"+ file.getOriginalFilename());
+            throw  new FileNameException(file.getOriginalFilename());
         }
         if ( !isSupportedExtension(file.getOriginalFilename()) ){
-            throw  new InvalidExtensionException("extension "+ FilenameUtils.getExtension(file.getOriginalFilename() +" are invalid "));
+            throw  new InvalidExtensionException(FilenameUtils.getExtension(file.getOriginalFilename() ));
         }
          if ( !isSupportedContentType(file.getContentType()) ){
-             throw  new InvalidContentTypeException("Content Type "+ file.getContentType() +" are invalid ");
+             throw  new InvalidContentTypeException(file.getContentType());
          }
     }
 
     public void validateFile(String path, MultipartFile file) throws SystemException{
         validateFile(file);
         if( Files.exists(Paths.get(path + StringConstants.SLASH + file.getOriginalFilename())) ){
-            throw new DuplicateFileException("File already exists :" + file.getOriginalFilename());
+            throw new DuplicateFileException(file.getOriginalFilename());
         }
     }
 
@@ -71,11 +71,11 @@ public class FileValidator {
     }
     public  boolean isSupportedExtension(String fileName){
         String extension = FilenameUtils.getExtension(fileName);
-        if( storageProperties.getFileExtensions().equals("*")){
+        if( storageProperties.getFileExtensions().equals(StringConstants.STAR)){
             return true;
         }else{
-            if( !extension.equals("")){
-                extension = "."+extension;
+            if( !extension.equals(StringConstants.BLANK)){
+                extension = StringConstants.PERIOD+extension;
             }
             return allowedExtensions.contains(extension);
 

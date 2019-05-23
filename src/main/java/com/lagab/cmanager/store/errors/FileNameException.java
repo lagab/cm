@@ -9,10 +9,11 @@ import com.lagab.cmanager.web.rest.errors.SystemException;
 public class FileNameException extends SystemException{
 
     public FileNameException() {
+        super();
     }
 
     public FileNameException(String message) {
-        super(message);
+        super("FileName Invalid : "+ message);
     }
 
     public FileNameException(String message, Throwable cause) {

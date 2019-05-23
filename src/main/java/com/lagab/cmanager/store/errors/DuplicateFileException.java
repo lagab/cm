@@ -9,10 +9,11 @@ import com.lagab.cmanager.web.rest.errors.SystemException;
 public class DuplicateFileException extends SystemException{
 
     public DuplicateFileException() {
+        super();
     }
 
     public DuplicateFileException(String message) {
-        super(message);
+        super("File already exists :" + message);
     }
 
     public DuplicateFileException(String message, Throwable cause) {

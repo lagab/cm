@@ -9,10 +9,11 @@ import com.lagab.cmanager.web.rest.errors.SystemException;
 public class InvalidExtensionException extends SystemException{
 
     public InvalidExtensionException() {
+        super();
     }
 
-    public InvalidExtensionException(String message) {
-        super(message);
+    public InvalidExtensionException(String fileName) {
+        super("extension "+ fileName +" are invalid ");
     }
 
     public InvalidExtensionException(String message, Throwable cause) {
