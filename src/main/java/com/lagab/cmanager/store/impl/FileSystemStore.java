@@ -22,9 +22,7 @@ public class FileSystemStore extends BaseStore {
     }
 
 
-    public String getPath(String path){
-        return getPath(path,true);
-    }
+    @Override
     public String getPath(String path, boolean relative){
         if( relative ){
             return getConfig().getUploadDir()+ StringConstants.SLASH + path;
@@ -41,7 +39,7 @@ public class FileSystemStore extends BaseStore {
         return getDirNameDir(repositoryDir.getPath() , dirName);
     }
 
-    protected File getRepositoryDir(long workspaceId, long repositoryId) {
+    private File getRepositoryDir(long workspaceId, long repositoryId) {
         return new File(workspaceId + StringConstants.SLASH + repositoryId);
     }
 
@@ -96,6 +94,12 @@ public class FileSystemStore extends BaseStore {
         deleteFile(path,fileName,true);
     }
 
+    @Override
+    public void deleteFile(String path, String fileName, String versionLabel) throws SystemException {
+        deleteFile(path,getVersionFileName(fileName,versionLabel),true);
+    }
+
+    @Override
     public void deleteFile(String path, String fileName, boolean relative) throws SystemException{
         File targetFile = new File(getPath(path,relative) + StringConstants.SLASH + fileName);
         FileUtils.deleteQuietly(targetFile);
@@ -106,11 +110,6 @@ public class FileSystemStore extends BaseStore {
                 throw new SystemException(e);
             }
         }
-    }
-
-    @Override
-    public void deleteFile(String path, String fileName, String versionLabel) throws SystemException {
-        deleteFile(path,getVersionFileName(fileName,versionLabel),true);
     }
 
     @Override
@@ -189,7 +188,7 @@ public class FileSystemStore extends BaseStore {
         }
     }
 
-
+    @Override
     public void move(String srcDir, String destDir,String fileName) throws SystemException {
         File sourceFile = new File(getPath(srcDir,false) + StringConstants.SLASH + fileName);
         File targetFile = new File(getPath(destDir,false));
@@ -205,6 +204,10 @@ public class FileSystemStore extends BaseStore {
     }
 
     public static boolean isEmptyDirectory(String dirName){
-        return (!Files.isDirectory(Paths.get(dirName))) || Paths.get(dirName).toFile()== null ||  Paths.get(dirName).toFile().listFiles().length == 0;
+        return (!Files.isDirectory(Paths.get(dirName)))
+            || Paths.get(dirName).toFile()== null
+            ||  Paths.get(dirName).toFile().listFiles().length == 0;
     }
+
+
 }

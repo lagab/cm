@@ -25,6 +25,14 @@ public class AttachmentFileDTO extends AbstractAuditingDTO implements Serializab
 
     private AttachmentDTO attachment;
 
+    public AttachmentFileDTO(){
+
+    }
+    public AttachmentFileDTO(AttachmentDTO attachment,MultipartFile file){
+        this.attachment = attachment;
+        this.file = file;
+    }
+
     public Long getEntityId() {
         return entityId;
     }
@@ -66,15 +74,19 @@ public class AttachmentFileDTO extends AbstractAuditingDTO implements Serializab
     }
 
     public void buildAttachment() {
-        this.attachment = new AttachmentDTO();
+        if(this.attachment == null) {
+            this.attachment = new AttachmentDTO();
+
+            attachment.setEntityId(entityId);
+            attachment.setEntityType(entityType);
+            attachment.setDownloads(0);
+            attachment.setDiskFilename(entityType.toString().toLowerCase() + StringConstants.SLASH + entityId );
+        }
         attachment.setFilename(file.getOriginalFilename());
-        attachment.setEntityId(entityId);
-        attachment.setEntityType(entityType);
         attachment.setContentType(file.getContentType());
         attachment.setFileSize(file.getSize());
-        attachment.setDownloads(0);
-        attachment.setDiskFilename(entityType.toString().toLowerCase() + StringConstants.SLASH + entityId );
     }
+
 
     @Override
     public String toString() {

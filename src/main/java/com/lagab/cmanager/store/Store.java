@@ -15,8 +15,9 @@ public interface Store {
     public void setConfig(StorageProperties config);
 
     public String getPath(String path);
-    public String getPath(String path,boolean isTmp);
+    public String getPath(String path,boolean isRelative);
     public String getTempPath(String path);
+    public String getFileNameDir(String path, String fileName);
 
     public void addDirectory(String path, String dirName) throws SystemException;
 
@@ -28,9 +29,7 @@ public interface Store {
     public void copyFileVersion(String path, String fileName,String fromVersionLabel, String toVersionLabel);
 
     public void deleteDirectory(String path, String dirName) throws SystemException;
-
     public void deleteFile(String path, String fileName) throws SystemException;
-
     public void deleteFile(String path, String fileName, String versionLabel) throws SystemException;
     public void deleteFile(String path, String fileName,  boolean relative) throws SystemException;
 

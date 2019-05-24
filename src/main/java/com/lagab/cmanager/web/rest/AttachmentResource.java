@@ -196,11 +196,40 @@ public class AttachmentResource {
             .body(result);
     }
 
+    @RequestMapping(path = "/attachments/{id}",
+        consumes = {MediaType.APPLICATION_OCTET_STREAM_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE},
+        method = RequestMethod.POST)
+    // Todo : changer de fichhier / Ex: 1-54-16.png va devenir article.gif  => suppression / creation
+    public ResponseEntity<AttachmentDTO> updateAttachment(@PathVariable Long id , @RequestPart MultipartFile file) throws SystemException, IOException {
+        AttachmentDTO attachment = attachmentService.findOne(id).orElseThrow(AttachmentNotFoundException::new);
+        String oldName = attachment.getFilename();
+        AttachmentFileDTO attachmentDTO = new AttachmentFileDTO(attachment,file);
+        attachmentDTO.buildAttachment();
 
+        log.debug("REST request to save Attachment : {}", attachment);
 
-    @GetMapping("/attachments//{id}/download")
+        fileValidator.validateFile(store.getPath(attachmentDTO.getAttachment().getDiskFilename()),file);
+
+        store.addFile(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ),file.getOriginalFilename(),file.getInputStream(),false);
+        AttachmentDTO result = attachmentService.save(attachmentDTO.getAttachment());
+        if(result != null){
+            //on deplace le fichier temporaire vers sa reele destination
+            store.move(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ), store.getPath(attachmentDTO.getAttachment().getDiskFilename()), file.getOriginalFilename());
+        }
+        //si ça se passe mal on revert la creation de la piece jointe
+        store.deleteFile(store.getTempPath(attachmentDTO.getAttachment().getDiskFilename()), file.getOriginalFilename(),false);
+
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, attachment.getId().toString()))
+            .body(result);
+    }
+
+    @GetMapping("/attachments/{id}/download")
     public ResponseEntity<byte[]> downloadAttachment(@PathVariable Long id) throws SystemException {
         AttachmentDTO attachment = attachmentService.findOne(id).orElseThrow(AttachmentNotFoundException::new);
+        attachment.setDownloads(attachment.getDownloads() + 1);
+        attachmentService.save(attachment);
+
         return ResponseEntity.ok()
             .contentType(MediaType.parseMediaType(attachment.getContentType()))
             .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + attachment.getFilename() + "\"")

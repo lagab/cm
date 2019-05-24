@@ -29,6 +29,12 @@ public abstract class BaseStore implements Store{
         this.config = config;
     }
 
+    @Override
+    public String getPath(String path){
+        return getPath(path,true);
+    }
+
+    @Override
     public String getTempPath(String path){
         return config.getTmpDir() + StringConstants.SLASH + path;
     }
