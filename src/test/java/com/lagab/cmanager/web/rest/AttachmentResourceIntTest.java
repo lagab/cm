@@ -52,7 +52,7 @@ public class AttachmentResourceIntTest {
     private static final Long UPDATED_ENTITY_ID = 2L;
 
     private static final EntityType DEFAULT_ENTITY_TYPE = EntityType.CONTRACT;
-    private static final EntityType UPDATED_ENTITY_TYPE = EntityType.CONTRACT;
+    private static final EntityType UPDATED_ENTITY_TYPE = EntityType.NONE;
 
     private static final String DEFAULT_FILENAME = "AAAAAAAAAA";
     private static final String UPDATED_FILENAME = "BBBBBBBBBB";

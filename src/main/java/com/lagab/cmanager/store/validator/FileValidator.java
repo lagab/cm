@@ -70,7 +70,7 @@ public class FileValidator {
         return fileName.matches(FILE_NAME_REGEX);
     }
     public  boolean isSupportedExtension(String fileName){
-        String extension = FilenameUtils.getExtension(fileName);
+        String extension = FilenameUtils.getExtension(fileName).toLowerCase();
         if( storageProperties.getFileExtensions().equals(StringConstants.STAR)){
             return true;
         }else{

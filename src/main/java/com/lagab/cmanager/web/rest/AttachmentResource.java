@@ -199,7 +199,7 @@ public class AttachmentResource {
     @RequestMapping(path = "/attachments/{id}",
         consumes = {MediaType.APPLICATION_OCTET_STREAM_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE},
         method = RequestMethod.POST)
-    // Todo : changer de fichhier / Ex: 1-54-16.png va devenir article.gif  => suppression / creation
+
     public ResponseEntity<AttachmentDTO> updateAttachment(@PathVariable Long id , @RequestPart MultipartFile file) throws SystemException, IOException {
         AttachmentDTO attachment = attachmentService.findOne(id).orElseThrow(AttachmentNotFoundException::new);
         String oldName = attachment.getFilename();
@@ -213,6 +213,8 @@ public class AttachmentResource {
         store.addFile(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ),file.getOriginalFilename(),file.getInputStream(),false);
         AttachmentDTO result = attachmentService.save(attachmentDTO.getAttachment());
         if(result != null){
+            //on supprime l'ancier
+            store.deleteFile(attachmentDTO.getAttachment().getDiskFilename(),oldName);
             //on deplace le fichier temporaire vers sa reele destination
             store.move(store.getTempPath( attachmentDTO.getAttachment().getDiskFilename() ), store.getPath(attachmentDTO.getAttachment().getDiskFilename()), file.getOriginalFilename());
         }
